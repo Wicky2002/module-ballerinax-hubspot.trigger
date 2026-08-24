@@ -1,0 +1,16 @@
+[package]
+distribution = "2201.13.4"
+org = "ballerinax"
+name = "trigger.hubspot"
+version = "@toml.version@"
+license = ["Apache-2.0"]
+authors = ["Ballerina"]
+keywords = ["Sales & CRM/Customer Relationship Management", "Cost/Freemium", "Trigger"]
+icon = "icon.png"
+repository = "https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger"
+
+[build-options]
+observabilityIncluded = true
+
+[platform.java21]
+graalvmCompatible = true
