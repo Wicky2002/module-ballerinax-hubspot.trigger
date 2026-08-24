@@ -268,6 +268,32 @@ The app must be installed in a HubSpot account for that account's events to trig
 
 5. After authorizing, the browser redirects to `http://localhost:3000`. The page displays an access token and a sample contact name, confirming the installation was successful.
 
+### Production / business integration
+
+The steps above use ngrok's temporary URL and a hardcoded secret, which are fine for local testing
+but not for a real deployment. For production use:
+
+1. Deploy your Ballerina service somewhere with a stable, internet-reachable HTTPS URL. Ballerina
+   doesn't require any specific hosting platform - containers, a VM, a managed PaaS, or anything
+   else that gives you a stable HTTPS endpoint all work equally well.
+
+2. In `src/app/webhooks/webhook-hsmeta.json` (Step 6), set `targetUrl` to your production URL
+   instead of the ngrok URL, then re-run `hs project upload`.
+
+3. Rather than hardcoding `webhookSecret` as shown in the Quickstart, inject it via `Config.toml`
+   (or your platform's equivalent configuration/secret mechanism), since it's a `configurable`
+   value:
+
+   ```toml
+   [<your_org>.<your_module_name>.userInput]
+   webhookSecret = "<your production Client Secret>"
+   callbackUrl = "<your production URL>"
+   ```
+
+   `callbackUrl` must exactly match the `targetUrl` you set in step 2 above - it's part of the
+   signed payload HubSpot uses to compute the signature, so any mismatch makes verification fail
+   for every request.
+
 ### Compatibility
 
 |                               | Version                       |
