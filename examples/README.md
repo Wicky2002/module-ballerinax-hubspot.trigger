@@ -2,13 +2,14 @@
 
 The `ballerinax/trigger.hubspot` connector provides practical examples illustrating usage in various scenarios.
 
-[//]: # (TODO: Add examples)
-1. 
-2. 
+1. [Company event logger](company-event-logger) - the minimal, canonical use case: log every `Company` lifecycle event.
+2. [Deal pipeline notifier](deal-pipeline-notifier) - notify on deal creation and stage changes, a starting point for sales-pipeline automation.
+3. [Conversation inbox alert](conversation-inbox-alert) - a different domain: alert on new support-inbox messages instead of CRM record changes.
 
 ## Prerequisites
 
-[//]: # (TODO: Add prerequisites)
+Complete the [Setup guide](../ballerina/README.md#setup-guide) in the package README first - each
+example needs a HubSpot app with a webhook subscribed to the events it listens for.
 
 ## Running an example
 
