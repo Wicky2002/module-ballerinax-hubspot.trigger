@@ -13,9 +13,12 @@ The [Ballerina](https://ballerina.io/) listener for Hubspot allows you to listen
 This module receives HubSpot's webhook events directly, batched into a single delivery when
 multiple events occur close together - it does not call HubSpot's own REST API on your behalf.
 
-## Prerequisites
+## Setup guide
 
-Before using this connector in your Ballerina application, complete the following steps.
+Before using this connector in your Ballerina application, you need a HubSpot developer account
+and app, and a Ballerina service that HubSpot can reach over the internet to deliver webhook
+payloads to. The steps below cover a quick local test setup; see
+[Production / business integration](#production--business-integration) for deploying for real use.
 
 ### Step 1: Create a HubSpot Developer Account
 
@@ -305,8 +308,8 @@ but not for a real deployment. For production use:
 To use the HubSpot listener in your Ballerina application, update the `.bal` file as follows.
 
 Before running the quickstart, ensure you have:
-- The **Client Secret** from Step 7 of the Prerequisites
-- Your **ngrok URL** from Step 4 of the Prerequisites
+- The **Client Secret** from Step 7 of the Setup guide
+- Your **ngrok URL** from Step 4 of the Setup guide
 - ngrok running (`ngrok http 8090`)
 - The OAuth quickstart server running (`npm start` in the `oauth-quickstart-nodejs` directory)
 
@@ -321,7 +324,7 @@ import ballerina/io;
 
 ### Step 2: Create a new listener instance
 
-Add the following to your `Config.toml` file, replacing the placeholders with the values saved during the Prerequisites:
+Add the following to your `Config.toml` file, replacing the placeholders with the values saved during the Setup guide:
 
 ```toml
 webhookSecret = "<YOUR_CLIENT_SECRET>"
