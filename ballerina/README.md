@@ -396,6 +396,8 @@ bal run
 
 To verify it is working, go to your **HubSpot test account** and create or delete a Contact, Company, or Deal. You should see the event printed in the Ballerina console output.
 
+<img src=https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-hubspot.trigger/main/docs/setup/resources/webhook-confirmed.png alt="Ballerina console output showing a real HubSpot webhook event dispatched successfully" width="70%">
+
 ## Examples
 
 The `trigger.hubspot` module provides practical examples illustrating usage in various scenarios.
