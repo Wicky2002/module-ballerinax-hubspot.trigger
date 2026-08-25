@@ -12,26 +12,27 @@ listener hubspot:Listener webhookListener = new (config, 8090);
 service hubspot:CompanyService on webhookListener {
 
     remote function onCompanyCreation(hubspot:WebhookEvent payload) returns error? {
-        log:printInfo(string `Company ${payload.objectId ?: 0} created`);
+        log:printInfo("Company created", id = payload.objectId ?: 0);
     }
 
     remote function onCompanyDeletion(hubspot:WebhookEvent payload) returns error? {
-        log:printInfo(string `Company ${payload.objectId ?: 0} deleted`);
+        log:printInfo("Company deleted", id = payload.objectId ?: 0);
     }
 
     remote function onCompanyPropertyChange(hubspot:WebhookEvent payload) returns error? {
-        log:printInfo(string `Company ${payload.objectId ?: 0} property "${payload.propertyName ?: ""}" changed to "${payload.propertyValue ?: ""}"`);
+        log:printInfo("Company property changed", id = payload.objectId ?: 0,
+                property = payload.propertyName ?: "", value = payload.propertyValue ?: "");
     }
 
     remote function onCompanyAssociationChange(hubspot:WebhookEvent payload) returns error? {
-        log:printInfo(string `Company ${payload.objectId ?: 0} association changed`);
+        log:printInfo("Company association changed", id = payload.objectId ?: 0);
     }
 
     remote function onCompanyMerge(hubspot:WebhookEvent payload) returns error? {
-        log:printInfo(string `Company ${payload.objectId ?: 0} merged`);
+        log:printInfo("Company merged", id = payload.objectId ?: 0);
     }
 
     remote function onCompanyRestore(hubspot:WebhookEvent payload) returns error? {
-        log:printInfo(string `Company ${payload.objectId ?: 0} restored`);
+        log:printInfo("Company restored", id = payload.objectId ?: 0);
     }
 }

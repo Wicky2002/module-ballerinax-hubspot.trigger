@@ -1,4 +1,4 @@
-// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com) All Rights Reserved.
+// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,214 +21,297 @@ import ballerina/lang.runtime;
 import ballerina/test;
 import ballerina/time;
 
-const string TRIGGER_TEST_SECRET = "trigger-test-secret";
-const int TRIGGER_TEST_PORT = 9091;
-const string TRIGGER_PAYLOAD_DIR = "tests/resources/trigger_payloads";
-const string TRIGGER_TEST_CALLBACK_URL = "test-callbackUrl-value";
+const TRIGGER_TEST_SECRET = "trigger-test-secret";
+const TRIGGER_TEST_PORT = 9091;
+const TRIGGER_PAYLOAD_DIR = "tests/resources/trigger_payloads";
+const TRIGGER_TEST_CALLBACK_URL = "test-callbackUrl-value";
 
-map<boolean> triggerFired = {};
+isolated map<boolean> triggerFired = {};
 
 listener Listener triggerTestListener = check new ({webhookSecret: TRIGGER_TEST_SECRET, callbackUrl: TRIGGER_TEST_CALLBACK_URL}, TRIGGER_TEST_PORT);
 
+final http:Client triggerClient = check new (string `http://localhost:${TRIGGER_TEST_PORT}`);
+
 service DealService on triggerTestListener {
-    remote function onDealDeletion(WebhookEvent payload) returns error? {
-        triggerFired["DealService.onDealDeletion"] = true;
+    isolated remote function onDealDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["DealService.onDealDeletion"] = true;
+        }
     }
 
-    remote function onDealCreation(WebhookEvent payload) returns error? {
-        triggerFired["DealService.onDealCreation"] = true;
+    isolated remote function onDealCreation(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["DealService.onDealCreation"] = true;
+        }
     }
 
-    remote function onDealMerge(WebhookEvent payload) returns error? {
-        triggerFired["DealService.onDealMerge"] = true;
+    isolated remote function onDealMerge(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["DealService.onDealMerge"] = true;
+        }
     }
 
-    remote function onDealPropertyChange(WebhookEvent payload) returns error? {
-        triggerFired["DealService.onDealPropertyChange"] = true;
+    isolated remote function onDealPropertyChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["DealService.onDealPropertyChange"] = true;
+        }
     }
 
-    remote function onDealRestore(WebhookEvent payload) returns error? {
-        triggerFired["DealService.onDealRestore"] = true;
+    isolated remote function onDealRestore(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["DealService.onDealRestore"] = true;
+        }
     }
 
-    remote function onDealAssociationChange(WebhookEvent payload) returns error? {
-        triggerFired["DealService.onDealAssociationChange"] = true;
+    isolated remote function onDealAssociationChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["DealService.onDealAssociationChange"] = true;
+        }
     }
 }
 
 service ProductService on triggerTestListener {
-    remote function onProductPropertyChange(WebhookEvent payload) returns error? {
-        triggerFired["ProductService.onProductPropertyChange"] = true;
+    isolated remote function onProductPropertyChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ProductService.onProductPropertyChange"] = true;
+        }
     }
 
-    remote function onProductDeletion(WebhookEvent payload) returns error? {
-        triggerFired["ProductService.onProductDeletion"] = true;
+    isolated remote function onProductDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ProductService.onProductDeletion"] = true;
+        }
     }
 
-    remote function onProductMerge(WebhookEvent payload) returns error? {
-        triggerFired["ProductService.onProductMerge"] = true;
+    isolated remote function onProductMerge(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ProductService.onProductMerge"] = true;
+        }
     }
 
-    remote function onProductRestore(WebhookEvent payload) returns error? {
-        triggerFired["ProductService.onProductRestore"] = true;
+    isolated remote function onProductRestore(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ProductService.onProductRestore"] = true;
+        }
     }
 
-    remote function onProductCreation(WebhookEvent payload) returns error? {
-        triggerFired["ProductService.onProductCreation"] = true;
+    isolated remote function onProductCreation(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ProductService.onProductCreation"] = true;
+        }
     }
 }
 
 service LineItemService on triggerTestListener {
-    remote function onLineItemMerge(WebhookEvent payload) returns error? {
-        triggerFired["LineItemService.onLineItemMerge"] = true;
+    isolated remote function onLineItemMerge(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemMerge"] = true;
+        }
     }
 
-    remote function onLineItemDeletion(WebhookEvent payload) returns error? {
-        triggerFired["LineItemService.onLineItemDeletion"] = true;
+    isolated remote function onLineItemDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemDeletion"] = true;
+        }
     }
 
-    remote function onLineItemPropertyChange(WebhookEvent payload) returns error? {
-        triggerFired["LineItemService.onLineItemPropertyChange"] = true;
+    isolated remote function onLineItemPropertyChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemPropertyChange"] = true;
+        }
     }
 
-    remote function onLineItemRestore(WebhookEvent payload) returns error? {
-        triggerFired["LineItemService.onLineItemRestore"] = true;
+    isolated remote function onLineItemRestore(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemRestore"] = true;
+        }
     }
 
-    remote function onLineItemAssociationChange(WebhookEvent payload) returns error? {
-        triggerFired["LineItemService.onLineItemAssociationChange"] = true;
+    isolated remote function onLineItemAssociationChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemAssociationChange"] = true;
+        }
     }
 
-    remote function onLineItemCreation(WebhookEvent payload) returns error? {
-        triggerFired["LineItemService.onLineItemCreation"] = true;
+    isolated remote function onLineItemCreation(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemCreation"] = true;
+        }
     }
 }
 
 service TicketService on triggerTestListener {
-    remote function onTicketPropertyChange(WebhookEvent payload) returns error? {
-        triggerFired["TicketService.onTicketPropertyChange"] = true;
+    isolated remote function onTicketPropertyChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketPropertyChange"] = true;
+        }
     }
 
-    remote function onTicketDeletion(WebhookEvent payload) returns error? {
-        triggerFired["TicketService.onTicketDeletion"] = true;
+    isolated remote function onTicketDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketDeletion"] = true;
+        }
     }
 
-    remote function onTicketCreation(WebhookEvent payload) returns error? {
-        triggerFired["TicketService.onTicketCreation"] = true;
+    isolated remote function onTicketCreation(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketCreation"] = true;
+        }
     }
 
-    remote function onTicketMerge(WebhookEvent payload) returns error? {
-        triggerFired["TicketService.onTicketMerge"] = true;
+    isolated remote function onTicketMerge(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketMerge"] = true;
+        }
     }
 
-    remote function onTicketRestore(WebhookEvent payload) returns error? {
-        triggerFired["TicketService.onTicketRestore"] = true;
+    isolated remote function onTicketRestore(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketRestore"] = true;
+        }
     }
 
-    remote function onTicketAssociationChange(WebhookEvent payload) returns error? {
-        triggerFired["TicketService.onTicketAssociationChange"] = true;
+    isolated remote function onTicketAssociationChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketAssociationChange"] = true;
+        }
     }
 }
 
 service ContactService on triggerTestListener {
-    remote function onContactCreation(WebhookEvent payload) returns error? {
-        triggerFired["ContactService.onContactCreation"] = true;
+    isolated remote function onContactCreation(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ContactService.onContactCreation"] = true;
+        }
     }
 
-    remote function onContactAssociationChange(WebhookEvent payload) returns error? {
-        triggerFired["ContactService.onContactAssociationChange"] = true;
+    isolated remote function onContactAssociationChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ContactService.onContactAssociationChange"] = true;
+        }
     }
 
-    remote function onContactDeletion(WebhookEvent payload) returns error? {
-        triggerFired["ContactService.onContactDeletion"] = true;
+    isolated remote function onContactDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ContactService.onContactDeletion"] = true;
+        }
     }
 
-    remote function onContactPrivacyDeletion(WebhookEvent payload) returns error? {
-        triggerFired["ContactService.onContactPrivacyDeletion"] = true;
+    isolated remote function onContactPrivacyDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ContactService.onContactPrivacyDeletion"] = true;
+        }
     }
 
-    remote function onContactPropertyChange(WebhookEvent payload) returns error? {
-        triggerFired["ContactService.onContactPropertyChange"] = true;
+    isolated remote function onContactPropertyChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ContactService.onContactPropertyChange"] = true;
+        }
     }
 
-    remote function onContactMerge(WebhookEvent payload) returns error? {
-        triggerFired["ContactService.onContactMerge"] = true;
+    isolated remote function onContactMerge(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ContactService.onContactMerge"] = true;
+        }
     }
 
-    remote function onContactRestore(WebhookEvent payload) returns error? {
-        triggerFired["ContactService.onContactRestore"] = true;
+    isolated remote function onContactRestore(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ContactService.onContactRestore"] = true;
+        }
     }
 }
 
 service CompanyService on triggerTestListener {
-    remote function onCompanyDeletion(WebhookEvent payload) returns error? {
-        triggerFired["CompanyService.onCompanyDeletion"] = true;
+    isolated remote function onCompanyDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["CompanyService.onCompanyDeletion"] = true;
+        }
     }
 
-    remote function onCompanyRestore(WebhookEvent payload) returns error? {
-        triggerFired["CompanyService.onCompanyRestore"] = true;
+    isolated remote function onCompanyRestore(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["CompanyService.onCompanyRestore"] = true;
+        }
     }
 
-    remote function onCompanyMerge(WebhookEvent payload) returns error? {
-        triggerFired["CompanyService.onCompanyMerge"] = true;
+    isolated remote function onCompanyMerge(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["CompanyService.onCompanyMerge"] = true;
+        }
     }
 
-    remote function onCompanyPropertyChange(WebhookEvent payload) returns error? {
-        triggerFired["CompanyService.onCompanyPropertyChange"] = true;
+    isolated remote function onCompanyPropertyChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["CompanyService.onCompanyPropertyChange"] = true;
+        }
     }
 
-    remote function onCompanyCreation(WebhookEvent payload) returns error? {
-        triggerFired["CompanyService.onCompanyCreation"] = true;
+    isolated remote function onCompanyCreation(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["CompanyService.onCompanyCreation"] = true;
+        }
     }
 
-    remote function onCompanyAssociationChange(WebhookEvent payload) returns error? {
-        triggerFired["CompanyService.onCompanyAssociationChange"] = true;
+    isolated remote function onCompanyAssociationChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["CompanyService.onCompanyAssociationChange"] = true;
+        }
     }
 }
 
 service ConversationService on triggerTestListener {
-    remote function onConversationCreation(WebhookEvent payload) returns error? {
-        triggerFired["ConversationService.onConversationCreation"] = true;
+    isolated remote function onConversationCreation(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ConversationService.onConversationCreation"] = true;
+        }
     }
 
-    remote function onConversationPropertyChange(WebhookEvent payload) returns error? {
-        triggerFired["ConversationService.onConversationPropertyChange"] = true;
+    isolated remote function onConversationPropertyChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ConversationService.onConversationPropertyChange"] = true;
+        }
     }
 
-    remote function onConversationPrivacyDeletion(WebhookEvent payload) returns error? {
-        triggerFired["ConversationService.onConversationPrivacyDeletion"] = true;
+    isolated remote function onConversationPrivacyDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ConversationService.onConversationPrivacyDeletion"] = true;
+        }
     }
 
-    remote function onConversationNewMessage(WebhookEvent payload) returns error? {
-        triggerFired["ConversationService.onConversationNewMessage"] = true;
+    isolated remote function onConversationNewMessage(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ConversationService.onConversationNewMessage"] = true;
+        }
     }
 
-    remote function onConversationDeletion(WebhookEvent payload) returns error? {
-        triggerFired["ConversationService.onConversationDeletion"] = true;
+    isolated remote function onConversationDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ConversationService.onConversationDeletion"] = true;
+        }
     }
 }
 
 isolated function sendSignedTriggerWebhook(string headerValue, string eventIdentifier) returns http:Response|error {
     byte[] body = check io:fileReadBytes(string `${TRIGGER_PAYLOAD_DIR}/${eventIdentifier}.json`);
     string bodyText = check string:fromBytes(body);
-    http:Request request = new;
-    request.setBinaryPayload(body, contentType = "application/json");
     string xHubspotRequestTimestampHeaderValue = (time:utcNow()[0] * 1000).toString();
-    request.setHeader("X-HubSpot-Request-Timestamp", xHubspotRequestTimestampHeaderValue);
     string payloadToHash = string `${"POST"}${TRIGGER_TEST_CALLBACK_URL}${bodyText}${xHubspotRequestTimestampHeaderValue}`;
     byte[] computedDigest = check crypto:hmacSha256(payloadToHash.toBytes(), TRIGGER_TEST_SECRET.toBytes());
     string computedSignature = computedDigest.toBase64();
-    string signature = string `${computedSignature}`;
-
-    http:Client triggerClient = check new (string `http://localhost:${TRIGGER_TEST_PORT}`);
-    request.setHeader("X-HubSpot-Signature-v3", signature);
-    return triggerClient->post("/", request);
+    map<string> headers = {
+        "X-HubSpot-Request-Timestamp": xHubspotRequestTimestampHeaderValue,
+        "X-HubSpot-Signature-v3": string `${computedSignature}`
+    };
+    return triggerClient->post("/", body, headers, "application/json");
 }
 
 function waitForDispatch(string trackerKey) returns boolean {
     foreach int i in 0 ..< 20 {
-        if triggerFired[trackerKey] ?: false {
-            return true;
+        lock {
+            if triggerFired[trackerKey] ?: false {
+                return true;
+            }
         }
         runtime:sleep(0.05);
     }

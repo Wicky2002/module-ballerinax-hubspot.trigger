@@ -1,4 +1,4 @@
-// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com) All Rights Reserved.
+// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -34,14 +34,14 @@ service class DispatcherService {
 
     isolated function addServiceRef(string serviceType, GenericServiceType genericService) returns error? {
         if (self.services.hasKey(serviceType)) {
-            return error("Service of type " + serviceType + " has already been attached");
+            return error(string `Service of type ${serviceType} has already been attached`);
         }
         self.services[serviceType] = genericService;
     }
 
     isolated function removeServiceRef(string serviceType) returns error? {
         if (!self.services.hasKey(serviceType)) {
-            return error("Cannot detach the service of type " + serviceType + ". Service has not been attached to the listener before");
+            return error(string `Cannot detach the service of type ${serviceType}. Service has not been attached to the listener before`);
         }
         _ = self.services.remove(serviceType);
     }
@@ -56,41 +56,47 @@ service class DispatcherService {
         }
         json payload = check request.getJsonPayload();
         json[] eventsArray = check payload.ensureType();
-        http:Response ackResponse = new;ackResponse.statusCode = http:STATUS_OK; check caller->respond(ackResponse);
+        http:Response ackResponse = new;
+        ackResponse.statusCode = http:STATUS_OK;
+        check caller->respond(ackResponse);
+        _ = start self.dispatchBatchedEvents(eventsArray, "");
+    }
+
+    isolated function dispatchBatchedEvents(json[] eventsArray, string eventType) returns error? {
         foreach json event in eventsArray {
             json|error eventTypeField = event.subscriptionType;
             if eventTypeField is error {
                 log:printError("DISPATCH_FAILED", eventTypeField);
                 continue;
             }
-            string eventType = eventTypeField.toString();
+            string elementEventType = eventTypeField.toString();
             GenericDataType|error genericDataTypeResult = event.cloneWithType(GenericDataType);
             if genericDataTypeResult is error {
                 log:printError("DISPATCH_FAILED", genericDataTypeResult);
                 continue;
             }
-            error? dispatchResult = self.matchRemoteFunc(genericDataTypeResult, eventType);
+            error? dispatchResult = self.matchRemoteFunc(genericDataTypeResult, elementEventType);
             if dispatchResult is error {
                 log:printError("DISPATCH_FAILED", dispatchResult);
             }
         }
     }
 
-    private function verifyWebhookSignature(http:Request request, string webhookSecret) returns error? {
+    private isolated function verifyWebhookSignature(http:Request request, string webhookSecret) returns error? {
         if !request.hasHeader("X-HubSpot-Request-Timestamp") {
             return error("Unauthorized: Missing Freshness Header");
         }
-        string freshnessHeaderValue = let var headerValue = trap request.getHeader("X-HubSpot-Request-Timestamp") in (headerValue is string ? headerValue : "");
+        string freshnessHeaderValue = check request.getHeader("X-HubSpot-Request-Timestamp");
         decimal freshnessTimestamp = check decimal:fromString(freshnessHeaderValue);
         decimal freshnessNowMillis = <decimal>time:utcNow()[0] * 1000;
         decimal freshnessSkewMillis = freshnessNowMillis - freshnessTimestamp;
-        if freshnessSkewMillis.abs() > <decimal>300000 {
+        if freshnessSkewMillis.abs() > 300000d {
             return error("Unauthorized: Request Timestamp Expired");
         }
         if !request.hasHeader("X-HubSpot-Signature-v3") {
             return error("Unauthorized: Missing Signature Header");
         }
-        string receivedHeader = let var headerValue = trap request.getHeader("X-HubSpot-Signature-v3") in (headerValue is string ? headerValue : "");
+        string receivedHeader = check request.getHeader("X-HubSpot-Signature-v3");
         map<string> extractedHeaderValues = {};
         int headerCursor = 0;
         extractedHeaderValues["signature"] = receivedHeader.substring(headerCursor);
@@ -98,22 +104,16 @@ service class DispatcherService {
         if !extractedHeaderValues.hasKey("signature") {
             return error("Unauthorized: Missing Header Component: signature");
         }
-        string signature = extractedHeaderValues["signature"] ?: "";
-        if !extractedHeaderValues.hasKey("signature") {
-            return error("Unauthorized: Missing Signature Value");
-        }
-        string extractedSignature = extractedHeaderValues["signature"] ?: "";
-        string payloadToHash = string `${request.method}${self.callbackUrl}${check request.getTextPayload()}${let var headerValue = trap request.getHeader("X-HubSpot-Request-Timestamp") in (headerValue is string ? headerValue : "")}`;
+        string payloadToHash = string `${request.method}${self.callbackUrl}${check request.getTextPayload()}${check request.getHeader("X-HubSpot-Request-Timestamp")}`;
         byte[] computedDigest = check crypto:hmacSha256(payloadToHash.toBytes(), webhookSecret.toBytes());
         string computedSignature = computedDigest.toBase64();
         string expectedHeader = string `${computedSignature}`;
         if !crypto:equalConstantTime(receivedHeader.toBytes(), expectedHeader.toBytes()) {
             return error("Unauthorized: Signature Mismatch");
         }
-        return;
     }
 
-    private function matchRemoteFunc(GenericDataType genericDataType, string eventType) returns error? {
+    private isolated function matchRemoteFunc(GenericDataType genericDataType, string eventType) returns error? {
         check self.matchRemoteFuncForTicket(genericDataType);
         check self.matchRemoteFuncForCompany(genericDataType);
         check self.matchRemoteFuncForLineItem(genericDataType);
@@ -123,7 +123,7 @@ service class DispatcherService {
         check self.matchRemoteFuncForContact(genericDataType);
     }
 
-    private function matchRemoteFuncForTicket(GenericDataType genericDataType) returns error? {
+    private isolated function matchRemoteFuncForTicket(GenericDataType genericDataType) returns error? {
         match genericDataType.subscriptionType {
             "ticket.propertyChange" => {
                 check self.executeRemoteFunc(genericDataType, "ticket.propertyChange", "TicketService", "onTicketPropertyChange");
@@ -146,7 +146,7 @@ service class DispatcherService {
         }
     }
 
-    private function matchRemoteFuncForCompany(GenericDataType genericDataType) returns error? {
+    private isolated function matchRemoteFuncForCompany(GenericDataType genericDataType) returns error? {
         match genericDataType.subscriptionType {
             "company.deletion" => {
                 check self.executeRemoteFunc(genericDataType, "company.deletion", "CompanyService", "onCompanyDeletion");
@@ -169,7 +169,7 @@ service class DispatcherService {
         }
     }
 
-    private function matchRemoteFuncForLineItem(GenericDataType genericDataType) returns error? {
+    private isolated function matchRemoteFuncForLineItem(GenericDataType genericDataType) returns error? {
         match genericDataType.subscriptionType {
             "line_item.merge" => {
                 check self.executeRemoteFunc(genericDataType, "line_item.merge", "LineItemService", "onLineItemMerge");
@@ -192,7 +192,7 @@ service class DispatcherService {
         }
     }
 
-    private function matchRemoteFuncForProduct(GenericDataType genericDataType) returns error? {
+    private isolated function matchRemoteFuncForProduct(GenericDataType genericDataType) returns error? {
         match genericDataType.subscriptionType {
             "product.propertyChange" => {
                 check self.executeRemoteFunc(genericDataType, "product.propertyChange", "ProductService", "onProductPropertyChange");
@@ -212,7 +212,7 @@ service class DispatcherService {
         }
     }
 
-    private function matchRemoteFuncForConversation(GenericDataType genericDataType) returns error? {
+    private isolated function matchRemoteFuncForConversation(GenericDataType genericDataType) returns error? {
         match genericDataType.subscriptionType {
             "conversation.creation" => {
                 check self.executeRemoteFunc(genericDataType, "conversation.creation", "ConversationService", "onConversationCreation");
@@ -232,7 +232,7 @@ service class DispatcherService {
         }
     }
 
-    private function matchRemoteFuncForDeal(GenericDataType genericDataType) returns error? {
+    private isolated function matchRemoteFuncForDeal(GenericDataType genericDataType) returns error? {
         match genericDataType.subscriptionType {
             "deal.deletion" => {
                 check self.executeRemoteFunc(genericDataType, "deal.deletion", "DealService", "onDealDeletion");
@@ -255,7 +255,7 @@ service class DispatcherService {
         }
     }
 
-    private function matchRemoteFuncForContact(GenericDataType genericDataType) returns error? {
+    private isolated function matchRemoteFuncForContact(GenericDataType genericDataType) returns error? {
         match genericDataType.subscriptionType {
             "contact.creation" => {
                 check self.executeRemoteFunc(genericDataType, "contact.creation", "ContactService", "onContactCreation");
@@ -281,7 +281,7 @@ service class DispatcherService {
         }
     }
 
-    private function executeRemoteFunc(GenericDataType genericEvent, string eventName, string serviceTypeStr, string eventFunction) returns error? {
+    private isolated function executeRemoteFunc(GenericDataType genericEvent, string eventName, string serviceTypeStr, string eventFunction) returns error? {
         GenericServiceType? genericService = self.services[serviceTypeStr];
         if genericService is GenericServiceType {
             check self.nativeHandler.invokeRemoteFunction(genericEvent, eventName, eventFunction, genericService);

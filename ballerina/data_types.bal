@@ -1,4 +1,4 @@
-// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com) All Rights Reserved.
+// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -16,9 +16,12 @@
 
 const string DEFAULT_SECRET = "";
 
+# Configuration for the webhook listener, including the secret used to verify incoming requests.
 public type ListenerConfig record {
+    # The secret used to verify incoming webhook signatures.
     @display {label: "Webhook Secret"}
     string webhookSecret = DEFAULT_SECRET;
+    # Configurable value referenced by the webhook signature verification DSL (`$config('callbackUrl')`).
     string callbackUrl = "";
 };
 
@@ -73,4 +76,5 @@ public type WebhookEvent record {
     string messageType?;
 };
 
+# The union of every possible webhook payload type this listener can receive.
 public type GenericDataType WebhookEvent;

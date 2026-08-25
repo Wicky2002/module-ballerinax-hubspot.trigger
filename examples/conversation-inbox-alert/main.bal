@@ -12,7 +12,7 @@ listener hubspot:Listener webhookListener = new (config, 8090);
 service hubspot:ConversationService on webhookListener {
 
     remote function onConversationNewMessage(hubspot:WebhookEvent payload) returns error? {
-        log:printWarn(string `New inbox message on conversation thread ${payload.objectId ?: 0} - needs a response`);
+        log:printWarn("New inbox message needs a response", threadId = payload.objectId ?: 0);
     }
 
     remote function onConversationCreation(hubspot:WebhookEvent payload) returns error? {

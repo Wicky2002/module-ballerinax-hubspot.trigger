@@ -14,12 +14,13 @@ listener hubspot:Listener webhookListener = new (config, 8090);
 service hubspot:DealService on webhookListener {
 
     remote function onDealCreation(hubspot:WebhookEvent payload) returns error? {
-        log:printInfo(string `New deal ${payload.objectId ?: 0} created - notify the sales channel`);
+        log:printInfo("New deal created, notify the sales channel", id = payload.objectId ?: 0);
     }
 
     remote function onDealPropertyChange(hubspot:WebhookEvent payload) returns error? {
         if payload.propertyName == "dealstage" {
-            log:printInfo(string `Deal ${payload.objectId ?: 0} moved to stage "${payload.propertyValue ?: ""}"`);
+            log:printInfo("Deal moved to a new stage", id = payload.objectId ?: 0,
+                    stage = payload.propertyValue ?: "");
         }
     }
 
