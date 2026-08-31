@@ -1,5 +1,5 @@
 import ballerina/log;
-import ballerinax/trigger.hubspot;
+import ballerinax/hubspot.trigger as hubspot;
 
 configurable hubspot:ListenerConfig config = {
     webhookSecret: "xxxxxx",

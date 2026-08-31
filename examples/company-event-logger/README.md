@@ -1,6 +1,6 @@
 # Company event logger
 
-The minimal, canonical `trigger.hubspot` use case: listen for every `Company` lifecycle event and
+The minimal, canonical `hubspot.trigger` use case: listen for every `Company` lifecycle event and
 log a one-line summary.
 
 ## Run

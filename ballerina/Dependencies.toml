@@ -364,7 +364,7 @@ modules = [
 
 [[package]]
 org = "ballerinax"
-name = "trigger.hubspot"
+name = "hubspot.trigger"
 version = "0.12.0"
 dependencies = [
 	{org = "ballerina", name = "cloud"},
@@ -379,6 +379,6 @@ dependencies = [
 	{org = "ballerinax", name = "asyncapi.native.handler"}
 ]
 modules = [
-	{org = "ballerinax", packageName = "trigger.hubspot", moduleName = "trigger.hubspot"}
+	{org = "ballerinax", packageName = "hubspot.trigger", moduleName = "hubspot.trigger"}
 ]
 

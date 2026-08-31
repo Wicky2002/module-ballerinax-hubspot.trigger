@@ -1,6 +1,6 @@
 # Examples
 
-The `ballerinax/trigger.hubspot` connector provides practical examples illustrating usage in various scenarios.
+The `ballerinax/hubspot.trigger` connector provides practical examples illustrating usage in various scenarios.
 
 1. [Company event logger](company-event-logger) - the minimal, canonical use case: log every `Company` lifecycle event.
 2. [Deal pipeline notifier](deal-pipeline-notifier) - notify on deal creation and stage changes, a starting point for sales-pipeline automation.

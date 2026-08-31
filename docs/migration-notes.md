@@ -44,3 +44,14 @@ requests that fail verification or the 5-minute freshness window are rejected. S
 
 HubSpot sends up to 100 events per POST as a JSON array. The dispatcher now iterates the full
 batch instead of only ever acting on the first event in each request.
+
+## Package renamed: `trigger.hubspot` -> `hubspot.trigger`
+
+Renamed to match the naming convention used by every other trigger migrated this way (the package
+name mirrors the repo name, `{service}.trigger`), rather than the reversed form this package
+originally shipped with. Since Central packages aren't renamable, `hubspot.trigger` is a distinct
+package identity from the previously-published `ballerinax/trigger.hubspot:0.12.0` - this is a
+naming decision, not a version bump, and it makes the "does the version number continue 0.12.0's
+line" question (still an open discussion at review time) moot: whichever version this ships as,
+it's the first release of `hubspot.trigger` specifically, with no prior published history of its
+own to be consistent with.

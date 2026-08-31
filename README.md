@@ -1,8 +1,8 @@
-# Ballerina Trigger.hubspot connector
+# Ballerina Hubspot.trigger connector
 
 [![Build](https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger/actions/workflows/ci.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger/actions/workflows/ci.yml)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-hubspot.trigger.svg)](https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger/commits/master)
-[![GitHub Issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-library/module/trigger.hubspot.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-library/labels/module%trigger.hubspot)
+[![GitHub Issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-library/module/hubspot.trigger.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-library/labels/module%hubspot.trigger)
 
 ## Overview
 
@@ -321,10 +321,10 @@ Before running the quickstart, ensure you have:
 
 ### Step 1: Import listener
 
-To import the `ballerinax/trigger.hubspot` module into the Ballerina project, add the following statement:
+To import the `ballerinax/hubspot.trigger` module into the Ballerina project, add the following statement:
 
 ```ballerina
-import ballerinax/trigger.hubspot;
+import ballerinax/hubspot.trigger as hubspot;
 import ballerina/io;
 ```
 
@@ -406,7 +406,7 @@ To verify it is working, go to your **HubSpot test account** and create or delet
 
 ## Examples
 
-The `trigger.hubspot` module provides practical examples illustrating usage in various scenarios.
+The `hubspot.trigger` module provides practical examples illustrating usage in various scenarios.
 Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger/tree/main/examples/),
 covering common webhook event handling use cases.
 
@@ -498,7 +498,7 @@ All the contributors are encouraged to read the [Ballerina Code of Conduct](http
 
 ## Useful links
 
-* For more information go to the [`trigger.hubspot` package](https://central.ballerina.io/ballerinax/trigger.hubspot/latest).
+* For more information go to the [`hubspot.trigger` package](https://central.ballerina.io/ballerinax/hubspot.trigger/latest).
 * If you're upgrading from an older version, see the [migration notes](docs/migration-notes.md) for renamed functions and other breaking changes.
 * For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/).
 * Chat live with us via our [Discord server](https://discord.gg/ballerinalang).

@@ -29,9 +29,9 @@ plugins {
 
 rootProject.name = 'module-ballerinax-hubspot.trigger'
 
-include ':trigger.hubspot-ballerina'
+include ':hubspot.trigger-ballerina'
 
-project(':trigger.hubspot-ballerina').projectDir = file("ballerina")
+project(':hubspot.trigger-ballerina').projectDir = file("ballerina")
 
 gradleEnterprise {
     buildScan {
