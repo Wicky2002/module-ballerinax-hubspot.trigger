@@ -8,6 +8,3 @@ authors = ["Ballerina"]
 keywords = ["Sales & CRM/Customer Relationship Management", "Cost/Freemium", "Trigger"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger"
-
-[build-options]
-observabilityIncluded = true

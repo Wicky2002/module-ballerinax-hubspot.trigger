@@ -2,12 +2,9 @@
 distribution = "2201.13.0"
 org = "ballerinax"
 name = "hubspot.trigger"
-version = "0.12.0"
+version = "0.1.0"
 license = ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["Sales & CRM/Customer Relationship Management", "Cost/Freemium", "Trigger"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger"
-
-[build-options]
-observabilityIncluded = true
