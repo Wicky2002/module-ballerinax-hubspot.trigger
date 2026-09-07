@@ -2,7 +2,6 @@ asyncapi: 3.0.0
 x-ballerina-event-identifier:
   type: "body"
   path: "subscriptionType"
-  batched: true
 # callbackUrl (below) must exactly match the full external URL HubSpot's webhook subscription is
 # registered against - scheme, host, path, and query string included. HubSpot signs its own
 # "request URI" as part of the payload, which this listener can't reconstruct from the incoming
@@ -37,185 +36,267 @@ channels:
       companyCreation:
         x-ballerina-event-type: "company.creation"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       companyDeletion:
         x-ballerina-event-type: "company.deletion"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       companyPropertyChange:
         x-ballerina-event-type: "company.propertyChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       companyAssociationChange:
         x-ballerina-event-type: "company.associationChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       companyMerge:
         x-ballerina-event-type: "company.merge"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       companyRestore:
         x-ballerina-event-type: "company.restore"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
   contact:
     address: contact
     messages:
       contactCreation:
         x-ballerina-event-type: "contact.creation"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       contactDeletion:
         x-ballerina-event-type: "contact.deletion"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       contactPropertyChange:
         x-ballerina-event-type: "contact.propertyChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       contactAssociationChange:
         x-ballerina-event-type: "contact.associationChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       contactMerge:
         x-ballerina-event-type: "contact.merge"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       contactRestore:
         x-ballerina-event-type: "contact.restore"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       contactPrivacyDeletion:
         x-ballerina-event-type: "contact.privacyDeletion"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
   conversation:
     address: conversation
     messages:
       conversationCreation:
         x-ballerina-event-type: "conversation.creation"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       conversationDeletion:
         x-ballerina-event-type: "conversation.deletion"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       conversationPropertyChange:
         x-ballerina-event-type: "conversation.propertyChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       conversationPrivacyDeletion:
         x-ballerina-event-type: "conversation.privacyDeletion"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       conversationNewMessage:
         x-ballerina-event-type: "conversation.newMessage"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
   deal:
     address: deal
     messages:
       dealCreation:
         x-ballerina-event-type: "deal.creation"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       dealDeletion:
         x-ballerina-event-type: "deal.deletion"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       dealPropertyChange:
         x-ballerina-event-type: "deal.propertyChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       dealAssociationChange:
         x-ballerina-event-type: "deal.associationChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       dealMerge:
         x-ballerina-event-type: "deal.merge"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       dealRestore:
         x-ballerina-event-type: "deal.restore"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
   ticket:
     address: ticket
     messages:
       ticketCreation:
         x-ballerina-event-type: "ticket.creation"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       ticketDeletion:
         x-ballerina-event-type: "ticket.deletion"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       ticketPropertyChange:
         x-ballerina-event-type: "ticket.propertyChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       ticketAssociationChange:
         x-ballerina-event-type: "ticket.associationChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       ticketMerge:
         x-ballerina-event-type: "ticket.merge"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       ticketRestore:
         x-ballerina-event-type: "ticket.restore"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
   product:
     address: product
     messages:
       productCreation:
         x-ballerina-event-type: "product.creation"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       productDeletion:
         x-ballerina-event-type: "product.deletion"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       productPropertyChange:
         x-ballerina-event-type: "product.propertyChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       productMerge:
         x-ballerina-event-type: "product.merge"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       productRestore:
         x-ballerina-event-type: "product.restore"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
   line_item:
     address: line_item
     messages:
       lineItemCreation:
         x-ballerina-event-type: "line_item.creation"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       lineItemDeletion:
         x-ballerina-event-type: "line_item.deletion"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       lineItemPropertyChange:
         x-ballerina-event-type: "line_item.propertyChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       lineItemAssociationChange:
         x-ballerina-event-type: "line_item.associationChange"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       lineItemMerge:
         x-ballerina-event-type: "line_item.merge"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
       lineItemRestore:
         x-ballerina-event-type: "line_item.restore"
         payload:
-          $ref: "#/components/schemas/WebhookEvent"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
 operations:
   company:
     action: receive
