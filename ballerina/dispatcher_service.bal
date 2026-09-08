@@ -24,10 +24,10 @@ service class DispatcherService {
     *http:Service;
     private map<GenericServiceType> services = {};
     private handler:NativeHandler nativeHandler = new ();
-    private string webhookSecret;
+    private string? webhookSecret;
     private string callbackUrl;
 
-    function init(string webhookSecret, string callbackUrl) {
+    function init(string? webhookSecret, string callbackUrl) {
         self.webhookSecret = webhookSecret;
         self.callbackUrl = callbackUrl;
     }
@@ -82,7 +82,10 @@ service class DispatcherService {
         }
     }
 
-    private isolated function verifyWebhookSignature(http:Request request, string webhookSecret) returns error? {
+    private isolated function verifyWebhookSignature(http:Request request, string? webhookSecret) returns error? {
+        if webhookSecret is () {
+            return error("Unauthorized: Webhook Secret Not Configured");
+        }
         if !request.hasHeader("X-HubSpot-Request-Timestamp") {
             return error("Unauthorized: Missing Freshness Header");
         }

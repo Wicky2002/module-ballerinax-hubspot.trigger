@@ -22,13 +22,14 @@ public class Listener {
     private http:Listener httpListener;
     private DispatcherService dispatcherService;
 
-    public function init(ListenerConfig listenerConfig = {webhookSecret: DEFAULT_SECRET}, @cloud:Expose int|http:Listener listenOn = 8090) returns error? {
+    public function init(ListenerConfig listenerConfig = {}, @cloud:Expose int|http:Listener listenOn = 8090) returns error? {
         if listenOn is http:Listener {
             self.httpListener = listenOn;
         } else {
             self.httpListener = check new (listenOn);
         }
         self.dispatcherService = new DispatcherService(listenerConfig.webhookSecret, listenerConfig.callbackUrl);
+        check self.httpListener.attach(self.dispatcherService, ());
     }
 
     public isolated function attach(GenericServiceType serviceRef, () attachPoint) returns error? {
@@ -42,7 +43,6 @@ public class Listener {
     }
 
     public isolated function 'start() returns error? {
-        check self.httpListener.attach(self.dispatcherService, ());
         return self.httpListener.'start();
     }
 
@@ -55,22 +55,31 @@ public class Listener {
     }
 
     private isolated function getServiceTypeStr(GenericServiceType serviceRef) returns string|error {
-        if serviceRef is TicketService {
-            return "TicketService";
-        } else if serviceRef is CompanyService {
-            return "CompanyService";
-        } else if serviceRef is LineItemService {
-            return "LineItemService";
-        } else if serviceRef is ProductService {
-            return "ProductService";
-        } else if serviceRef is ConversationService {
-            return "ConversationService";
-        } else if serviceRef is DealService {
-            return "DealService";
-        } else if serviceRef is ContactService {
-            return "ContactService";
-        } else {
-            return error("Unrecognized service type attached to the listener");
+        match serviceRef {
+            var v if v is TicketService => {
+                return "TicketService";
+            }
+            var v if v is CompanyService => {
+                return "CompanyService";
+            }
+            var v if v is LineItemService => {
+                return "LineItemService";
+            }
+            var v if v is ProductService => {
+                return "ProductService";
+            }
+            var v if v is ConversationService => {
+                return "ConversationService";
+            }
+            var v if v is DealService => {
+                return "DealService";
+            }
+            var v if v is ContactService => {
+                return "ContactService";
+            }
+            var _ => {
+                return error("Unrecognized service type attached to the listener");
+            }
         }
     }
 }

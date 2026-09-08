@@ -14,13 +14,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
-const string DEFAULT_SECRET = "";
-
 # Configuration for the webhook listener, including the secret used to verify incoming requests.
 public type ListenerConfig record {
-    # The secret used to verify incoming webhook signatures.
-    @display {label: "Webhook Secret"}
-    string webhookSecret = DEFAULT_SECRET;
+    # Webhook Secret
+    string webhookSecret?;
     # Configurable value referenced by the webhook signature verification DSL (`$config('callbackUrl')`).
     string callbackUrl = "";
 };
