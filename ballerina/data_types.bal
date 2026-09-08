@@ -22,7 +22,7 @@ public type ListenerConfig record {
     string callbackUrl = "";
 };
 
-public type WebhookEvent record {
+public type WebhookEvent record {|
     # The ID of the event that triggered this notification. This value is not guaranteed to be unique.
     int eventId;
     # The ID of the subscription that triggered a notification about the event.
@@ -71,7 +71,8 @@ public type WebhookEvent record {
     int messageId?;
     # The type of the new message, either MESSAGE or COMMENT. Present for conversation.newMessage events.
     string messageType?;
-};
+    json...;
+|};
 
 # The union of every possible webhook payload type this listener can receive.
 public type GenericDataType WebhookEvent;
