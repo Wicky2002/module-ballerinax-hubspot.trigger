@@ -377,6 +377,7 @@ operations:
 components:
   schemas:
     WebhookEvent:
+      description: A single webhook notification HubSpot sends when a subscribed CRM event occurs (property change, association change, merge, or new conversation message).
       additionalProperties: true
       required:
         - eventId

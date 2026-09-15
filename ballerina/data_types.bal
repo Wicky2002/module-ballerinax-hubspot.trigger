@@ -16,12 +16,13 @@
 
 # Configuration for the webhook listener, including the secret used to verify incoming requests.
 public type ListenerConfig record {
-    # Webhook Secret
+    # The secret used to verify incoming webhook signatures.
     string webhookSecret?;
     # Configurable value referenced by the webhook signature verification DSL (`$config('callbackUrl')`).
     string callbackUrl = "";
 };
 
+# A single webhook notification HubSpot sends when a subscribed CRM event occurs (property change, association change, merge, or new conversation message).
 public type WebhookEvent record {|
     # The ID of the event that triggered this notification. This value is not guaranteed to be unique.
     int eventId;
