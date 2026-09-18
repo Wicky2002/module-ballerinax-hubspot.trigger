@@ -1,0 +1,1621 @@
+{
+  "version": "v1.0",
+  "listeners": [
+    {
+      "id": "$listener",
+      "doc": "Webhook listener that dispatches each inbound HubSpot CRM webhook event to the concrete service type matching its object.",
+      "type": {
+        "name": "Listener"
+      },
+      "services": [
+        "$ticket",
+        "$company",
+        "$lineItem",
+        "$product",
+        "$conversation",
+        "$deal",
+        "$contact"
+      ],
+      "multipleServicesAllowed": true,
+      "multipleServicesOfSameTypeAllowed": false
+    }
+  ],
+  "serviceTypes": [
+    {
+      "id": "$ticket",
+      "doc": "Receives HubSpot ticket events: property change, deletion, creation, merge, restore, and association change.",
+      "type": {
+        "name": "TicketService"
+      },
+      "concrete": false,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": false,
+        "options": [
+          {
+            "id": "$ticket.onTicketPropertyChange",
+            "name": "onTicketPropertyChange",
+            "kind": "remote",
+            "doc": "Triggered on Ticket property change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$ticket.onTicketPropertyChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$ticket.onTicketPropertyChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$ticket.onTicketDeletion",
+            "name": "onTicketDeletion",
+            "kind": "remote",
+            "doc": "Triggered on Ticket deletion.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$ticket.onTicketDeletion.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$ticket.onTicketDeletion.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$ticket.onTicketCreation",
+            "name": "onTicketCreation",
+            "kind": "remote",
+            "doc": "Triggered on Ticket creation.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$ticket.onTicketCreation.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$ticket.onTicketCreation.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$ticket.onTicketMerge",
+            "name": "onTicketMerge",
+            "kind": "remote",
+            "doc": "Triggered on Ticket merge.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$ticket.onTicketMerge.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$ticket.onTicketMerge.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$ticket.onTicketRestore",
+            "name": "onTicketRestore",
+            "kind": "remote",
+            "doc": "Triggered on Ticket restore.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$ticket.onTicketRestore.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$ticket.onTicketRestore.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$ticket.onTicketAssociationChange",
+            "name": "onTicketAssociationChange",
+            "kind": "remote",
+            "doc": "Triggered on Ticket association change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$ticket.onTicketAssociationChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$ticket.onTicketAssociationChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "id": "$atLeastOneTicketHandler",
+          "rule": "structure.atLeastOne",
+          "message": "A TicketService must declare at least one of onTicketPropertyChange, onTicketDeletion, onTicketCreation, onTicketMerge, onTicketRestore, onTicketAssociationChange, otherwise this event is received and silently dropped.",
+          "subjects": [
+            {
+              "kind": "handler",
+              "id": "$ticket.onTicketPropertyChange"
+            },
+            {
+              "kind": "handler",
+              "id": "$ticket.onTicketDeletion"
+            },
+            {
+              "kind": "handler",
+              "id": "$ticket.onTicketCreation"
+            },
+            {
+              "kind": "handler",
+              "id": "$ticket.onTicketMerge"
+            },
+            {
+              "kind": "handler",
+              "id": "$ticket.onTicketRestore"
+            },
+            {
+              "kind": "handler",
+              "id": "$ticket.onTicketAssociationChange"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "$company",
+      "doc": "Receives HubSpot company events: deletion, restore, merge, property change, creation, and association change.",
+      "type": {
+        "name": "CompanyService"
+      },
+      "concrete": false,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": false,
+        "options": [
+          {
+            "id": "$company.onCompanyDeletion",
+            "name": "onCompanyDeletion",
+            "kind": "remote",
+            "doc": "Triggered on Company deletion.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$company.onCompanyDeletion.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$company.onCompanyDeletion.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$company.onCompanyRestore",
+            "name": "onCompanyRestore",
+            "kind": "remote",
+            "doc": "Triggered on Company restore.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$company.onCompanyRestore.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$company.onCompanyRestore.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$company.onCompanyMerge",
+            "name": "onCompanyMerge",
+            "kind": "remote",
+            "doc": "Triggered on Company merge.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$company.onCompanyMerge.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$company.onCompanyMerge.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$company.onCompanyPropertyChange",
+            "name": "onCompanyPropertyChange",
+            "kind": "remote",
+            "doc": "Triggered on Company property change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$company.onCompanyPropertyChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$company.onCompanyPropertyChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$company.onCompanyCreation",
+            "name": "onCompanyCreation",
+            "kind": "remote",
+            "doc": "Triggered on Company creation.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$company.onCompanyCreation.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$company.onCompanyCreation.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$company.onCompanyAssociationChange",
+            "name": "onCompanyAssociationChange",
+            "kind": "remote",
+            "doc": "Triggered on Company association change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$company.onCompanyAssociationChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$company.onCompanyAssociationChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "id": "$atLeastOneCompanyHandler",
+          "rule": "structure.atLeastOne",
+          "message": "A CompanyService must declare at least one of onCompanyDeletion, onCompanyRestore, onCompanyMerge, onCompanyPropertyChange, onCompanyCreation, onCompanyAssociationChange, otherwise this event is received and silently dropped.",
+          "subjects": [
+            {
+              "kind": "handler",
+              "id": "$company.onCompanyDeletion"
+            },
+            {
+              "kind": "handler",
+              "id": "$company.onCompanyRestore"
+            },
+            {
+              "kind": "handler",
+              "id": "$company.onCompanyMerge"
+            },
+            {
+              "kind": "handler",
+              "id": "$company.onCompanyPropertyChange"
+            },
+            {
+              "kind": "handler",
+              "id": "$company.onCompanyCreation"
+            },
+            {
+              "kind": "handler",
+              "id": "$company.onCompanyAssociationChange"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "$lineItem",
+      "doc": "Receives HubSpot line item events: merge, deletion, property change, restore, association change, and creation.",
+      "type": {
+        "name": "LineItemService"
+      },
+      "concrete": false,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": false,
+        "options": [
+          {
+            "id": "$lineItem.onLineItemMerge",
+            "name": "onLineItemMerge",
+            "kind": "remote",
+            "doc": "Triggered on Line item merge.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$lineItem.onLineItemMerge.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$lineItem.onLineItemMerge.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$lineItem.onLineItemDeletion",
+            "name": "onLineItemDeletion",
+            "kind": "remote",
+            "doc": "Triggered on Line item deletion.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$lineItem.onLineItemDeletion.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$lineItem.onLineItemDeletion.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$lineItem.onLineItemPropertyChange",
+            "name": "onLineItemPropertyChange",
+            "kind": "remote",
+            "doc": "Triggered on Line item property change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$lineItem.onLineItemPropertyChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$lineItem.onLineItemPropertyChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$lineItem.onLineItemRestore",
+            "name": "onLineItemRestore",
+            "kind": "remote",
+            "doc": "Triggered on Line item restore.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$lineItem.onLineItemRestore.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$lineItem.onLineItemRestore.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$lineItem.onLineItemAssociationChange",
+            "name": "onLineItemAssociationChange",
+            "kind": "remote",
+            "doc": "Triggered on Line item association change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$lineItem.onLineItemAssociationChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$lineItem.onLineItemAssociationChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$lineItem.onLineItemCreation",
+            "name": "onLineItemCreation",
+            "kind": "remote",
+            "doc": "Triggered on Line item creation.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$lineItem.onLineItemCreation.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$lineItem.onLineItemCreation.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "id": "$atLeastOneLineItemHandler",
+          "rule": "structure.atLeastOne",
+          "message": "A LineItemService must declare at least one of onLineItemMerge, onLineItemDeletion, onLineItemPropertyChange, onLineItemRestore, onLineItemAssociationChange, onLineItemCreation, otherwise this event is received and silently dropped.",
+          "subjects": [
+            {
+              "kind": "handler",
+              "id": "$lineItem.onLineItemMerge"
+            },
+            {
+              "kind": "handler",
+              "id": "$lineItem.onLineItemDeletion"
+            },
+            {
+              "kind": "handler",
+              "id": "$lineItem.onLineItemPropertyChange"
+            },
+            {
+              "kind": "handler",
+              "id": "$lineItem.onLineItemRestore"
+            },
+            {
+              "kind": "handler",
+              "id": "$lineItem.onLineItemAssociationChange"
+            },
+            {
+              "kind": "handler",
+              "id": "$lineItem.onLineItemCreation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "$product",
+      "doc": "Receives HubSpot product events: property change, deletion, merge, restore, and creation.",
+      "type": {
+        "name": "ProductService"
+      },
+      "concrete": false,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": false,
+        "options": [
+          {
+            "id": "$product.onProductPropertyChange",
+            "name": "onProductPropertyChange",
+            "kind": "remote",
+            "doc": "Triggered on Product property change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$product.onProductPropertyChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$product.onProductPropertyChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$product.onProductDeletion",
+            "name": "onProductDeletion",
+            "kind": "remote",
+            "doc": "Triggered on Product deletion.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$product.onProductDeletion.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$product.onProductDeletion.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$product.onProductMerge",
+            "name": "onProductMerge",
+            "kind": "remote",
+            "doc": "Triggered on Product merge.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$product.onProductMerge.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$product.onProductMerge.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$product.onProductRestore",
+            "name": "onProductRestore",
+            "kind": "remote",
+            "doc": "Triggered on Product restore.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$product.onProductRestore.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$product.onProductRestore.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$product.onProductCreation",
+            "name": "onProductCreation",
+            "kind": "remote",
+            "doc": "Triggered on Product creation.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$product.onProductCreation.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$product.onProductCreation.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "id": "$atLeastOneProductHandler",
+          "rule": "structure.atLeastOne",
+          "message": "A ProductService must declare at least one of onProductPropertyChange, onProductDeletion, onProductMerge, onProductRestore, onProductCreation, otherwise this event is received and silently dropped.",
+          "subjects": [
+            {
+              "kind": "handler",
+              "id": "$product.onProductPropertyChange"
+            },
+            {
+              "kind": "handler",
+              "id": "$product.onProductDeletion"
+            },
+            {
+              "kind": "handler",
+              "id": "$product.onProductMerge"
+            },
+            {
+              "kind": "handler",
+              "id": "$product.onProductRestore"
+            },
+            {
+              "kind": "handler",
+              "id": "$product.onProductCreation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "$conversation",
+      "doc": "Receives HubSpot conversation events: creation, property change, privacy deletion, new message, and deletion.",
+      "type": {
+        "name": "ConversationService"
+      },
+      "concrete": false,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": false,
+        "options": [
+          {
+            "id": "$conversation.onConversationCreation",
+            "name": "onConversationCreation",
+            "kind": "remote",
+            "doc": "Triggered on Conversation creation.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$conversation.onConversationCreation.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$conversation.onConversationCreation.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$conversation.onConversationPropertyChange",
+            "name": "onConversationPropertyChange",
+            "kind": "remote",
+            "doc": "Triggered on Conversation property change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$conversation.onConversationPropertyChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$conversation.onConversationPropertyChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$conversation.onConversationPrivacyDeletion",
+            "name": "onConversationPrivacyDeletion",
+            "kind": "remote",
+            "doc": "Triggered on Conversation privacy deletion.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$conversation.onConversationPrivacyDeletion.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$conversation.onConversationPrivacyDeletion.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$conversation.onConversationNewMessage",
+            "name": "onConversationNewMessage",
+            "kind": "remote",
+            "doc": "Triggered on Conversation new message.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$conversation.onConversationNewMessage.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$conversation.onConversationNewMessage.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$conversation.onConversationDeletion",
+            "name": "onConversationDeletion",
+            "kind": "remote",
+            "doc": "Triggered on Conversation deletion.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$conversation.onConversationDeletion.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$conversation.onConversationDeletion.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "id": "$atLeastOneConversationHandler",
+          "rule": "structure.atLeastOne",
+          "message": "A ConversationService must declare at least one of onConversationCreation, onConversationPropertyChange, onConversationPrivacyDeletion, onConversationNewMessage, onConversationDeletion, otherwise this event is received and silently dropped.",
+          "subjects": [
+            {
+              "kind": "handler",
+              "id": "$conversation.onConversationCreation"
+            },
+            {
+              "kind": "handler",
+              "id": "$conversation.onConversationPropertyChange"
+            },
+            {
+              "kind": "handler",
+              "id": "$conversation.onConversationPrivacyDeletion"
+            },
+            {
+              "kind": "handler",
+              "id": "$conversation.onConversationNewMessage"
+            },
+            {
+              "kind": "handler",
+              "id": "$conversation.onConversationDeletion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "$deal",
+      "doc": "Receives HubSpot deal events: deletion, creation, merge, property change, restore, and association change.",
+      "type": {
+        "name": "DealService"
+      },
+      "concrete": false,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": false,
+        "options": [
+          {
+            "id": "$deal.onDealDeletion",
+            "name": "onDealDeletion",
+            "kind": "remote",
+            "doc": "Triggered on Deal deletion.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$deal.onDealDeletion.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$deal.onDealDeletion.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$deal.onDealCreation",
+            "name": "onDealCreation",
+            "kind": "remote",
+            "doc": "Triggered on Deal creation.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$deal.onDealCreation.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$deal.onDealCreation.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$deal.onDealMerge",
+            "name": "onDealMerge",
+            "kind": "remote",
+            "doc": "Triggered on Deal merge.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$deal.onDealMerge.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$deal.onDealMerge.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$deal.onDealPropertyChange",
+            "name": "onDealPropertyChange",
+            "kind": "remote",
+            "doc": "Triggered on Deal property change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$deal.onDealPropertyChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$deal.onDealPropertyChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$deal.onDealRestore",
+            "name": "onDealRestore",
+            "kind": "remote",
+            "doc": "Triggered on Deal restore.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$deal.onDealRestore.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$deal.onDealRestore.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$deal.onDealAssociationChange",
+            "name": "onDealAssociationChange",
+            "kind": "remote",
+            "doc": "Triggered on Deal association change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$deal.onDealAssociationChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$deal.onDealAssociationChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "id": "$atLeastOneDealHandler",
+          "rule": "structure.atLeastOne",
+          "message": "A DealService must declare at least one of onDealDeletion, onDealCreation, onDealMerge, onDealPropertyChange, onDealRestore, onDealAssociationChange, otherwise this event is received and silently dropped.",
+          "subjects": [
+            {
+              "kind": "handler",
+              "id": "$deal.onDealDeletion"
+            },
+            {
+              "kind": "handler",
+              "id": "$deal.onDealCreation"
+            },
+            {
+              "kind": "handler",
+              "id": "$deal.onDealMerge"
+            },
+            {
+              "kind": "handler",
+              "id": "$deal.onDealPropertyChange"
+            },
+            {
+              "kind": "handler",
+              "id": "$deal.onDealRestore"
+            },
+            {
+              "kind": "handler",
+              "id": "$deal.onDealAssociationChange"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "$contact",
+      "doc": "Receives HubSpot contact events: creation, association change, deletion, privacy deletion, property change, merge, and restore.",
+      "type": {
+        "name": "ContactService"
+      },
+      "concrete": false,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": false,
+        "options": [
+          {
+            "id": "$contact.onContactCreation",
+            "name": "onContactCreation",
+            "kind": "remote",
+            "doc": "Triggered on Contact creation.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$contact.onContactCreation.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$contact.onContactCreation.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$contact.onContactAssociationChange",
+            "name": "onContactAssociationChange",
+            "kind": "remote",
+            "doc": "Triggered on Contact association change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$contact.onContactAssociationChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$contact.onContactAssociationChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$contact.onContactDeletion",
+            "name": "onContactDeletion",
+            "kind": "remote",
+            "doc": "Triggered on Contact deletion.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$contact.onContactDeletion.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$contact.onContactDeletion.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$contact.onContactPrivacyDeletion",
+            "name": "onContactPrivacyDeletion",
+            "kind": "remote",
+            "doc": "Triggered on Contact privacy deletion.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$contact.onContactPrivacyDeletion.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$contact.onContactPrivacyDeletion.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$contact.onContactPropertyChange",
+            "name": "onContactPropertyChange",
+            "kind": "remote",
+            "doc": "Triggered on Contact property change.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$contact.onContactPropertyChange.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$contact.onContactPropertyChange.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$contact.onContactMerge",
+            "name": "onContactMerge",
+            "kind": "remote",
+            "doc": "Triggered on Contact merge.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$contact.onContactMerge.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$contact.onContactMerge.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "$contact.onContactRestore",
+            "name": "onContactRestore",
+            "kind": "remote",
+            "doc": "Triggered on Contact restore.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$contact.onContactRestore.payload",
+                "name": "payload",
+                "doc": "the WebhookEvent webhook payload",
+                "type": {
+                  "name": "WebhookEvent"
+                },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$contact.onContactRestore.returns",
+              "type": [
+                {
+                  "name": "error",
+                  "builtin": true
+                },
+                {
+                  "name": "()",
+                  "builtin": true
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "id": "$atLeastOneContactHandler",
+          "rule": "structure.atLeastOne",
+          "message": "A ContactService must declare at least one of onContactCreation, onContactAssociationChange, onContactDeletion, onContactPrivacyDeletion, onContactPropertyChange, onContactMerge, onContactRestore, otherwise this event is received and silently dropped.",
+          "subjects": [
+            {
+              "kind": "handler",
+              "id": "$contact.onContactCreation"
+            },
+            {
+              "kind": "handler",
+              "id": "$contact.onContactAssociationChange"
+            },
+            {
+              "kind": "handler",
+              "id": "$contact.onContactDeletion"
+            },
+            {
+              "kind": "handler",
+              "id": "$contact.onContactPrivacyDeletion"
+            },
+            {
+              "kind": "handler",
+              "id": "$contact.onContactPropertyChange"
+            },
+            {
+              "kind": "handler",
+              "id": "$contact.onContactMerge"
+            },
+            {
+              "kind": "handler",
+              "id": "$contact.onContactRestore"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

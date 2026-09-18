@@ -8,3 +8,4 @@ authors = ["Ballerina"]
 keywords = ["Area/CRM & Sales", "Vendor/HubSpot", "Cost/Freemium", "Type/Trigger"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger"
+include = ["metadata/**"]

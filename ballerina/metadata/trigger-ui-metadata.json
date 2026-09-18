@@ -1,0 +1,4931 @@
+{
+  "version": "v1.0",
+  "metadata": {
+    "kind": "event"
+  },
+  "trigger": {
+    "displayName": "HubSpot Event Integration",
+    "description": "Create a service to handle webhook events from HubSpot",
+    "type": "hubspot"
+  },
+  "initForm": {
+    "fields": [
+      {
+        "target": {
+          "kind": "recordField",
+          "owner": "trigger.initProperties",
+          "path": "serviceType"
+        },
+        "metadata": {
+          "label": "Event Channel",
+          "description": "The type of HubSpot CRM object event to listen for"
+        },
+        "source": {
+          "construct": {
+            "kind": "SERVICE_TYPE_DESCRIPTOR"
+          },
+          "module": {
+            "name": "hubspot"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "editable": true,
+          "optional": false,
+          "advanced": false
+        },
+        "key": "serviceType",
+        "default": "hubspot:ContactService"
+      }
+    ]
+  },
+  "listeners": [
+    {
+      "target": "$listener",
+      "form": {
+        "section": {
+          "label": "Listener",
+          "description": "Attach the service to a new or existing HubSpot webhook listener."
+        },
+        "createNew": {
+          "label": "Create New Listener",
+          "description": "Define a new HubSpot webhook listener in the project."
+        },
+        "listenerConfig": {
+          "label": "Listener Configurations",
+          "description": "Configure the HubSpot webhook listener."
+        },
+        "useExisting": {
+          "label": "Use Existing Listener",
+          "description": "Attach to a HubSpot listener already declared in the project."
+        },
+        "existingListener": {
+          "label": "Listener",
+          "description": "Select an existing listener to attach the service to."
+        },
+        "existingListenerItems": [
+          "hubspotListener"
+        ],
+        "existingListenerValue": "hubspotListener"
+      },
+      "formFields": {
+        "listenerVarName": {
+          "key": "listenerVarName",
+          "default": "hubspotListener",
+          "metadata": {
+            "label": "Listener Name",
+            "description": "Provide a name for the listener being created"
+          },
+          "source": {
+            "construct": {
+              "kind": "LISTENER_VAR_NAME"
+            }
+          },
+          "state": {
+            "enabled": true,
+            "editable": true,
+            "optional": false,
+            "advanced": false
+          }
+        },
+        "listenOn": {
+          "key": "listenOn",
+          "placeholder": "8090",
+          "default": "8090",
+          "metadata": {
+            "label": "Webhook Listener Port",
+            "description": "The port on which the webhook listener accepts incoming HTTP requests"
+          },
+          "source": {
+            "argument": {
+              "kind": "LISTENER_PARAM_REQUIRED",
+              "position": 2,
+              "originalName": "listenOn"
+            }
+          },
+          "state": {
+            "enabled": true,
+            "editable": true,
+            "optional": true,
+            "advanced": false
+          }
+        },
+        "webhookSecret": {
+          "key": "webhookSecret",
+          "placeholder": "",
+          "default": "",
+          "metadata": {
+            "label": "Webhook Secret",
+            "description": "Secret used to validate incoming HubSpot webhook requests"
+          },
+          "source": {
+            "argument": {
+              "kind": "LISTENER_PARAM_CONFIG_FIELD",
+              "originalName": "webhookSecret",
+              "position": 1
+            },
+            "path": "webhookSecret"
+          },
+          "state": {
+            "enabled": true,
+            "editable": true,
+            "optional": true,
+            "advanced": false
+          }
+        },
+        "callbackUrl": {
+          "key": "callbackUrl",
+          "placeholder": "",
+          "default": "",
+          "metadata": {
+            "label": "Callback URL",
+            "description": "Configurable value referenced by the webhook signature verification DSL"
+          },
+          "source": {
+            "argument": {
+              "kind": "LISTENER_PARAM_CONFIG_FIELD",
+              "originalName": "callbackUrl",
+              "position": 1
+            },
+            "path": "callbackUrl"
+          },
+          "state": {
+            "enabled": true,
+            "editable": true,
+            "optional": true,
+            "advanced": true
+          }
+        }
+      }
+    }
+  ],
+  "serviceTypes": [
+    {
+      "target": "$ticket",
+      "metadata": {
+        "label": "Ticket",
+        "description": "Triggered when an event related to HubSpot ticket is received. Available actions: onTicketPropertyChange, onTicketDeletion, onTicketCreation, onTicketMerge, onTicketRestore, and onTicketAssociationChange."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "TicketService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      },
+      "handlers": [
+        {
+          "target": "$ticket.onTicketPropertyChange",
+          "metadata": {
+            "label": "onTicketPropertyChange",
+            "description": "Triggered on Ticket property change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$ticket",
+                "handler": "onTicketPropertyChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Ticket property change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$ticket.onTicketPropertyChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onTicketPropertyChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$ticket.onTicketDeletion",
+          "metadata": {
+            "label": "onTicketDeletion",
+            "description": "Triggered on Ticket deletion."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$ticket",
+                "handler": "onTicketDeletion",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Ticket deletion."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$ticket.onTicketDeletion.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onTicketDeletion"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$ticket.onTicketCreation",
+          "metadata": {
+            "label": "onTicketCreation",
+            "description": "Triggered on Ticket creation."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$ticket",
+                "handler": "onTicketCreation",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Ticket creation."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$ticket.onTicketCreation.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onTicketCreation"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$ticket.onTicketMerge",
+          "metadata": {
+            "label": "onTicketMerge",
+            "description": "Triggered on Ticket merge."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$ticket",
+                "handler": "onTicketMerge",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Ticket merge."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$ticket.onTicketMerge.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onTicketMerge"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$ticket.onTicketRestore",
+          "metadata": {
+            "label": "onTicketRestore",
+            "description": "Triggered on Ticket restore."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$ticket",
+                "handler": "onTicketRestore",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Ticket restore."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$ticket.onTicketRestore.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onTicketRestore"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$ticket.onTicketAssociationChange",
+          "metadata": {
+            "label": "onTicketAssociationChange",
+            "description": "Triggered on Ticket association change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$ticket",
+                "handler": "onTicketAssociationChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Ticket association change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$ticket.onTicketAssociationChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onTicketAssociationChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        }
+      ]
+    },
+    {
+      "target": "$company",
+      "metadata": {
+        "label": "Company",
+        "description": "Triggered when an event related to HubSpot company is received. Available actions: onCompanyDeletion, onCompanyRestore, onCompanyMerge, onCompanyPropertyChange, onCompanyCreation, and onCompanyAssociationChange."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "CompanyService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      },
+      "handlers": [
+        {
+          "target": "$company.onCompanyDeletion",
+          "metadata": {
+            "label": "onCompanyDeletion",
+            "description": "Triggered on Company deletion."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$company",
+                "handler": "onCompanyDeletion",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Company deletion."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$company.onCompanyDeletion.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onCompanyDeletion"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$company.onCompanyRestore",
+          "metadata": {
+            "label": "onCompanyRestore",
+            "description": "Triggered on Company restore."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$company",
+                "handler": "onCompanyRestore",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Company restore."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$company.onCompanyRestore.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onCompanyRestore"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$company.onCompanyMerge",
+          "metadata": {
+            "label": "onCompanyMerge",
+            "description": "Triggered on Company merge."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$company",
+                "handler": "onCompanyMerge",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Company merge."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$company.onCompanyMerge.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onCompanyMerge"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$company.onCompanyPropertyChange",
+          "metadata": {
+            "label": "onCompanyPropertyChange",
+            "description": "Triggered on Company property change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$company",
+                "handler": "onCompanyPropertyChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Company property change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$company.onCompanyPropertyChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onCompanyPropertyChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$company.onCompanyCreation",
+          "metadata": {
+            "label": "onCompanyCreation",
+            "description": "Triggered on Company creation."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$company",
+                "handler": "onCompanyCreation",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Company creation."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$company.onCompanyCreation.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onCompanyCreation"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$company.onCompanyAssociationChange",
+          "metadata": {
+            "label": "onCompanyAssociationChange",
+            "description": "Triggered on Company association change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$company",
+                "handler": "onCompanyAssociationChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Company association change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$company.onCompanyAssociationChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onCompanyAssociationChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        }
+      ]
+    },
+    {
+      "target": "$lineItem",
+      "metadata": {
+        "label": "Line Item",
+        "description": "Triggered when an event related to HubSpot line item is received. Available actions: onLineItemMerge, onLineItemDeletion, onLineItemPropertyChange, onLineItemRestore, onLineItemAssociationChange, and onLineItemCreation."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "LineItemService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      },
+      "handlers": [
+        {
+          "target": "$lineItem.onLineItemMerge",
+          "metadata": {
+            "label": "onLineItemMerge",
+            "description": "Triggered on Line item merge."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$lineItem",
+                "handler": "onLineItemMerge",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Line item merge."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$lineItem.onLineItemMerge.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onLineItemMerge"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$lineItem.onLineItemDeletion",
+          "metadata": {
+            "label": "onLineItemDeletion",
+            "description": "Triggered on Line item deletion."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$lineItem",
+                "handler": "onLineItemDeletion",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Line item deletion."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$lineItem.onLineItemDeletion.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onLineItemDeletion"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$lineItem.onLineItemPropertyChange",
+          "metadata": {
+            "label": "onLineItemPropertyChange",
+            "description": "Triggered on Line item property change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$lineItem",
+                "handler": "onLineItemPropertyChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Line item property change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$lineItem.onLineItemPropertyChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onLineItemPropertyChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$lineItem.onLineItemRestore",
+          "metadata": {
+            "label": "onLineItemRestore",
+            "description": "Triggered on Line item restore."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$lineItem",
+                "handler": "onLineItemRestore",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Line item restore."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$lineItem.onLineItemRestore.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onLineItemRestore"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$lineItem.onLineItemAssociationChange",
+          "metadata": {
+            "label": "onLineItemAssociationChange",
+            "description": "Triggered on Line item association change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$lineItem",
+                "handler": "onLineItemAssociationChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Line item association change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$lineItem.onLineItemAssociationChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onLineItemAssociationChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$lineItem.onLineItemCreation",
+          "metadata": {
+            "label": "onLineItemCreation",
+            "description": "Triggered on Line item creation."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$lineItem",
+                "handler": "onLineItemCreation",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Line item creation."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$lineItem.onLineItemCreation.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onLineItemCreation"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        }
+      ]
+    },
+    {
+      "target": "$product",
+      "metadata": {
+        "label": "Product",
+        "description": "Triggered when an event related to HubSpot product is received. Available actions: onProductPropertyChange, onProductDeletion, onProductMerge, onProductRestore, and onProductCreation."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "ProductService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      },
+      "handlers": [
+        {
+          "target": "$product.onProductPropertyChange",
+          "metadata": {
+            "label": "onProductPropertyChange",
+            "description": "Triggered on Product property change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$product",
+                "handler": "onProductPropertyChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Product property change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$product.onProductPropertyChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onProductPropertyChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$product.onProductDeletion",
+          "metadata": {
+            "label": "onProductDeletion",
+            "description": "Triggered on Product deletion."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$product",
+                "handler": "onProductDeletion",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Product deletion."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$product.onProductDeletion.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onProductDeletion"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$product.onProductMerge",
+          "metadata": {
+            "label": "onProductMerge",
+            "description": "Triggered on Product merge."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$product",
+                "handler": "onProductMerge",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Product merge."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$product.onProductMerge.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onProductMerge"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$product.onProductRestore",
+          "metadata": {
+            "label": "onProductRestore",
+            "description": "Triggered on Product restore."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$product",
+                "handler": "onProductRestore",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Product restore."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$product.onProductRestore.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onProductRestore"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$product.onProductCreation",
+          "metadata": {
+            "label": "onProductCreation",
+            "description": "Triggered on Product creation."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$product",
+                "handler": "onProductCreation",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Product creation."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$product.onProductCreation.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onProductCreation"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        }
+      ]
+    },
+    {
+      "target": "$conversation",
+      "metadata": {
+        "label": "Conversation",
+        "description": "Triggered when an event related to HubSpot conversation is received. Available actions: onConversationCreation, onConversationPropertyChange, onConversationPrivacyDeletion, onConversationNewMessage, and onConversationDeletion."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "ConversationService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      },
+      "handlers": [
+        {
+          "target": "$conversation.onConversationCreation",
+          "metadata": {
+            "label": "onConversationCreation",
+            "description": "Triggered on Conversation creation."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$conversation",
+                "handler": "onConversationCreation",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Conversation creation."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$conversation.onConversationCreation.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onConversationCreation"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$conversation.onConversationPropertyChange",
+          "metadata": {
+            "label": "onConversationPropertyChange",
+            "description": "Triggered on Conversation property change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$conversation",
+                "handler": "onConversationPropertyChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Conversation property change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$conversation.onConversationPropertyChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onConversationPropertyChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$conversation.onConversationPrivacyDeletion",
+          "metadata": {
+            "label": "onConversationPrivacyDeletion",
+            "description": "Triggered on Conversation privacy deletion."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$conversation",
+                "handler": "onConversationPrivacyDeletion",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Conversation privacy deletion."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$conversation.onConversationPrivacyDeletion.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onConversationPrivacyDeletion"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$conversation.onConversationNewMessage",
+          "metadata": {
+            "label": "onConversationNewMessage",
+            "description": "Triggered on Conversation new message."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$conversation",
+                "handler": "onConversationNewMessage",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Conversation new message."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$conversation.onConversationNewMessage.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onConversationNewMessage"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$conversation.onConversationDeletion",
+          "metadata": {
+            "label": "onConversationDeletion",
+            "description": "Triggered on Conversation deletion."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$conversation",
+                "handler": "onConversationDeletion",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Conversation deletion."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$conversation.onConversationDeletion.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onConversationDeletion"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        }
+      ]
+    },
+    {
+      "target": "$deal",
+      "metadata": {
+        "label": "Deal",
+        "description": "Triggered when an event related to HubSpot deal is received. Available actions: onDealDeletion, onDealCreation, onDealMerge, onDealPropertyChange, onDealRestore, and onDealAssociationChange."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "DealService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      },
+      "handlers": [
+        {
+          "target": "$deal.onDealDeletion",
+          "metadata": {
+            "label": "onDealDeletion",
+            "description": "Triggered on Deal deletion."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$deal",
+                "handler": "onDealDeletion",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Deal deletion."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$deal.onDealDeletion.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onDealDeletion"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$deal.onDealCreation",
+          "metadata": {
+            "label": "onDealCreation",
+            "description": "Triggered on Deal creation."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$deal",
+                "handler": "onDealCreation",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Deal creation."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$deal.onDealCreation.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onDealCreation"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$deal.onDealMerge",
+          "metadata": {
+            "label": "onDealMerge",
+            "description": "Triggered on Deal merge."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$deal",
+                "handler": "onDealMerge",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Deal merge."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$deal.onDealMerge.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onDealMerge"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$deal.onDealPropertyChange",
+          "metadata": {
+            "label": "onDealPropertyChange",
+            "description": "Triggered on Deal property change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$deal",
+                "handler": "onDealPropertyChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Deal property change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$deal.onDealPropertyChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onDealPropertyChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$deal.onDealRestore",
+          "metadata": {
+            "label": "onDealRestore",
+            "description": "Triggered on Deal restore."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$deal",
+                "handler": "onDealRestore",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Deal restore."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$deal.onDealRestore.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onDealRestore"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$deal.onDealAssociationChange",
+          "metadata": {
+            "label": "onDealAssociationChange",
+            "description": "Triggered on Deal association change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$deal",
+                "handler": "onDealAssociationChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Deal association change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$deal.onDealAssociationChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onDealAssociationChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        }
+      ]
+    },
+    {
+      "target": "$contact",
+      "metadata": {
+        "label": "Contact",
+        "description": "Triggered when an event related to HubSpot contact is received. Available actions: onContactCreation, onContactAssociationChange, onContactDeletion, onContactPrivacyDeletion, onContactPropertyChange, onContactMerge, and onContactRestore."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "ContactService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": true,
+        "editable": true
+      },
+      "handlers": [
+        {
+          "target": "$contact.onContactCreation",
+          "metadata": {
+            "label": "onContactCreation",
+            "description": "Triggered on Contact creation."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$contact",
+                "handler": "onContactCreation",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Contact creation."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$contact.onContactCreation.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onContactCreation"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$contact.onContactAssociationChange",
+          "metadata": {
+            "label": "onContactAssociationChange",
+            "description": "Triggered on Contact association change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$contact",
+                "handler": "onContactAssociationChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Contact association change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$contact.onContactAssociationChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onContactAssociationChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$contact.onContactDeletion",
+          "metadata": {
+            "label": "onContactDeletion",
+            "description": "Triggered on Contact deletion."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$contact",
+                "handler": "onContactDeletion",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Contact deletion."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$contact.onContactDeletion.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onContactDeletion"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$contact.onContactPrivacyDeletion",
+          "metadata": {
+            "label": "onContactPrivacyDeletion",
+            "description": "Triggered on Contact privacy deletion."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$contact",
+                "handler": "onContactPrivacyDeletion",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Contact privacy deletion."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$contact.onContactPrivacyDeletion.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onContactPrivacyDeletion"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$contact.onContactPropertyChange",
+          "metadata": {
+            "label": "onContactPropertyChange",
+            "description": "Triggered on Contact property change."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$contact",
+                "handler": "onContactPropertyChange",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Contact property change."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$contact.onContactPropertyChange.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onContactPropertyChange"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$contact.onContactMerge",
+          "metadata": {
+            "label": "onContactMerge",
+            "description": "Triggered on Contact merge."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$contact",
+                "handler": "onContactMerge",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Contact merge."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$contact.onContactMerge.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onContactMerge"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$contact.onContactRestore",
+          "metadata": {
+            "label": "onContactRestore",
+            "description": "Triggered on Contact restore."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$contact",
+                "handler": "onContactRestore",
+                "name": "payload"
+              },
+              "metadata": {
+                "label": "Payload",
+                "description": "The WebhookEvent webhook payload for this event."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "hubspot:WebhookEvent",
+                  "default": "hubspot:WebhookEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "payload.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "Triggered on Contact restore."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "payload"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$contact.onContactRestore.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onContactRestore"
+            },
+            "module": {
+              "name": "hubspot"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        }
+      ]
+    }
+  ],
+  "artifactInfo": {
+    "displayLabel": "HubSpot Event Integration",
+    "icon": {
+      "lightPath": "icons/light.svg",
+      "darkPath": "icons/dark.svg"
+    }
+  }
+}
