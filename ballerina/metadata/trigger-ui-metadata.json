@@ -1,0 +1,347 @@
+{
+  "version": "v1.0",
+  "metadata": {
+    "kind": "event"
+  },
+  "trigger": {
+    "displayName": "HubSpot Event Integration",
+    "description": "Create a service to handle webhook events from HubSpot",
+    "type": "hubspot"
+  },
+  "initForm": {
+    "fields": [
+      {
+        "target": {
+          "kind": "recordField",
+          "owner": "trigger.initProperties",
+          "path": "serviceType"
+        },
+        "metadata": {
+          "label": "Event Channel",
+          "description": "The type of HubSpot CRM object event to listen for"
+        },
+        "source": {
+          "construct": {
+            "kind": "SERVICE_TYPE_DESCRIPTOR"
+          },
+          "module": {
+            "name": "hubspot"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "editable": true,
+          "optional": false,
+          "advanced": false
+        },
+        "key": "serviceType",
+        "default": "hubspot:ContactService"
+      }
+    ]
+  },
+  "listeners": [
+    {
+      "target": "$listener",
+      "form": {
+        "section": {
+          "label": "Listener",
+          "description": "Attach the service to a new or existing HubSpot webhook listener."
+        },
+        "createNew": {
+          "label": "Create New Listener",
+          "description": "Define a new HubSpot webhook listener in the project."
+        },
+        "listenerConfig": {
+          "label": "Listener Configurations",
+          "description": "Configure the HubSpot webhook listener."
+        },
+        "useExisting": {
+          "label": "Use Existing Listener",
+          "description": "Attach to a HubSpot listener already declared in the project."
+        },
+        "existingListener": {
+          "label": "Listener",
+          "description": "Select an existing listener to attach the service to."
+        },
+        "existingListenerItems": [
+          "hubspotListener"
+        ],
+        "existingListenerValue": "hubspotListener"
+      },
+      "formFields": {
+        "listenerVarName": {
+          "key": "listenerVarName",
+          "default": "hubspotListener",
+          "metadata": {
+            "label": "Listener Name",
+            "description": "Provide a name for the listener being created"
+          },
+          "source": {
+            "construct": {
+              "kind": "LISTENER_VAR_NAME"
+            }
+          },
+          "state": {
+            "enabled": true,
+            "editable": true,
+            "optional": false,
+            "advanced": false
+          }
+        },
+        "listenOn": {
+          "key": "listenOn",
+          "placeholder": "8090",
+          "default": "8090",
+          "metadata": {
+            "label": "Webhook Listener Port",
+            "description": "The port on which the webhook listener accepts incoming HTTP requests"
+          },
+          "source": {
+            "argument": {
+              "kind": "LISTENER_PARAM_REQUIRED",
+              "position": 2,
+              "originalName": "listenOn"
+            }
+          },
+          "state": {
+            "enabled": true,
+            "editable": true,
+            "optional": true,
+            "advanced": false
+          }
+        },
+        "listenerConfigFallback": {
+          "key": "listenerConfigFallback",
+          "default": "{}",
+          "metadata": {
+            "label": "Listener Config",
+            "description": "Fallback empty value for the listener config record when no fields under it are set."
+          },
+          "source": {
+            "argument": {
+              "kind": "LISTENER_PARAM_REQUIRED",
+              "position": 1,
+              "originalName": "listenerConfig"
+            }
+          },
+          "state": {
+            "enabled": true,
+            "editable": false,
+            "optional": true,
+            "advanced": true,
+            "hidden": true
+          }
+        },
+        "webhookSecret": {
+          "key": "webhookSecret",
+          "placeholder": "",
+          "default": "",
+          "metadata": {
+            "label": "Webhook Secret",
+            "description": "Secret used to validate incoming HubSpot webhook requests"
+          },
+          "source": {
+            "argument": {
+              "kind": "LISTENER_PARAM_CONFIG_FIELD",
+              "originalName": "webhookSecret",
+              "position": 1
+            },
+            "path": "webhookSecret"
+          },
+          "state": {
+            "enabled": true,
+            "editable": true,
+            "optional": true,
+            "advanced": false
+          }
+        },
+        "callbackUrl": {
+          "key": "callbackUrl",
+          "placeholder": "",
+          "default": "",
+          "metadata": {
+            "label": "Callback URL",
+            "description": "Configurable value referenced by the webhook signature verification DSL"
+          },
+          "source": {
+            "argument": {
+              "kind": "LISTENER_PARAM_CONFIG_FIELD",
+              "originalName": "callbackUrl",
+              "position": 1
+            },
+            "path": "callbackUrl"
+          },
+          "state": {
+            "enabled": true,
+            "editable": true,
+            "optional": true,
+            "advanced": true
+          }
+        }
+      }
+    }
+  ],
+  "serviceTypes": [
+    {
+      "target": "$ticket",
+      "metadata": {
+        "label": "Ticket",
+        "description": "Triggered when an event related to HubSpot ticket is received. Available actions: onTicketPropertyChange, onTicketDeletion, onTicketCreation, onTicketMerge, onTicketRestore, and onTicketAssociationChange."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "TicketService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      }
+    },
+    {
+      "target": "$company",
+      "metadata": {
+        "label": "Company",
+        "description": "Triggered when an event related to HubSpot company is received. Available actions: onCompanyDeletion, onCompanyRestore, onCompanyMerge, onCompanyPropertyChange, onCompanyCreation, and onCompanyAssociationChange."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "CompanyService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      }
+    },
+    {
+      "target": "$lineItem",
+      "metadata": {
+        "label": "Line Item",
+        "description": "Triggered when an event related to HubSpot line item is received. Available actions: onLineItemMerge, onLineItemDeletion, onLineItemPropertyChange, onLineItemRestore, onLineItemAssociationChange, and onLineItemCreation."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "LineItemService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      }
+    },
+    {
+      "target": "$product",
+      "metadata": {
+        "label": "Product",
+        "description": "Triggered when an event related to HubSpot product is received. Available actions: onProductPropertyChange, onProductDeletion, onProductMerge, onProductRestore, and onProductCreation."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "ProductService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      }
+    },
+    {
+      "target": "$conversation",
+      "metadata": {
+        "label": "Conversation",
+        "description": "Triggered when an event related to HubSpot conversation is received. Available actions: onConversationCreation, onConversationPropertyChange, onConversationPrivacyDeletion, onConversationNewMessage, and onConversationDeletion."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "ConversationService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      }
+    },
+    {
+      "target": "$deal",
+      "metadata": {
+        "label": "Deal",
+        "description": "Triggered when an event related to HubSpot deal is received. Available actions: onDealDeletion, onDealCreation, onDealMerge, onDealPropertyChange, onDealRestore, and onDealAssociationChange."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "DealService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": false,
+        "editable": true
+      }
+    },
+    {
+      "target": "$contact",
+      "metadata": {
+        "label": "Contact",
+        "description": "Triggered when an event related to HubSpot contact is received. Available actions: onContactCreation, onContactAssociationChange, onContactDeletion, onContactPrivacyDeletion, onContactPropertyChange, onContactMerge, and onContactRestore."
+      },
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "ContactService"
+        },
+        "module": {
+          "name": "hubspot"
+        }
+      },
+      "state": {
+        "enabled": true,
+        "editable": true
+      }
+    }
+  ],
+  "artifactInfo": {
+    "displayLabel": "HubSpot Event Integration",
+    "icon": {
+      "lightPath": "icons/light.svg",
+      "darkPath": "icons/dark.svg"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+import ballerina/log;
+import ballerinax/hubspot.trigger as hubspot;
+
+configurable hubspot:ListenerConfig config = {
+    webhookSecret: "xxxxxx",
+    callbackUrl: "https://xxxxxx.ngrok-free.app"
+};
+
+listener hubspot:Listener webhookListener = new (config, 8090);
+
+// Auto-notify on deal creation and stage/property change. DealService declares more remote
+// functions than these two - every one of them must still be implemented, even as a no-op,
+// since Ballerina requires a complete implementation of the service type.
+service hubspot:DealService on webhookListener {
+
+    remote function onDealCreation(hubspot:WebhookEvent payload) returns error? {
+        log:printInfo("New deal created, notify the sales channel", id = payload.objectId ?: 0);
+    }
+
+    remote function onDealPropertyChange(hubspot:WebhookEvent payload) returns error? {
+        if payload.propertyName == "dealstage" {
+            log:printInfo("Deal moved to a new stage", id = payload.objectId ?: 0,
+                    stage = payload.propertyValue ?: "");
+        }
+    }
+
+    remote function onDealDeletion(hubspot:WebhookEvent payload) returns error? {
+        return;
+    }
+
+    remote function onDealMerge(hubspot:WebhookEvent payload) returns error? {
+        return;
+    }
+
+    remote function onDealRestore(hubspot:WebhookEvent payload) returns error? {
+        return;
+    }
+
+    remote function onDealAssociationChange(hubspot:WebhookEvent payload) returns error? {
+        return;
+    }
+}

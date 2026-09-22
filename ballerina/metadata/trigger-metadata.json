@@ -1,0 +1,109 @@
+{
+  "version": "v1.0",
+  "listeners": [
+    {
+      "id": "$listener",
+      "doc": "Webhook listener that dispatches each inbound HubSpot CRM webhook event to the concrete service type matching its object.",
+      "type": {
+        "name": "Listener"
+      },
+      "services": [
+        "$ticket",
+        "$company",
+        "$lineItem",
+        "$product",
+        "$conversation",
+        "$deal",
+        "$contact"
+      ],
+      "multipleServicesAllowed": true,
+      "multipleServicesOfSameTypeAllowed": false
+    }
+  ],
+  "serviceTypes": [
+    {
+      "id": "$ticket",
+      "doc": "Receives HubSpot ticket events: property change, deletion, creation, merge, restore, and association change.",
+      "type": {
+        "name": "TicketService"
+      },
+      "concrete": true,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": true
+      }
+    },
+    {
+      "id": "$company",
+      "doc": "Receives HubSpot company events: deletion, restore, merge, property change, creation, and association change.",
+      "type": {
+        "name": "CompanyService"
+      },
+      "concrete": true,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": true
+      }
+    },
+    {
+      "id": "$lineItem",
+      "doc": "Receives HubSpot line item events: merge, deletion, property change, restore, association change, and creation.",
+      "type": {
+        "name": "LineItemService"
+      },
+      "concrete": true,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": true
+      }
+    },
+    {
+      "id": "$product",
+      "doc": "Receives HubSpot product events: property change, deletion, merge, restore, and creation.",
+      "type": {
+        "name": "ProductService"
+      },
+      "concrete": true,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": true
+      }
+    },
+    {
+      "id": "$conversation",
+      "doc": "Receives HubSpot conversation events: creation, property change, privacy deletion, new message, and deletion.",
+      "type": {
+        "name": "ConversationService"
+      },
+      "concrete": true,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": true
+      }
+    },
+    {
+      "id": "$deal",
+      "doc": "Receives HubSpot deal events: deletion, creation, merge, property change, restore, and association change.",
+      "type": {
+        "name": "DealService"
+      },
+      "concrete": true,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": true
+      }
+    },
+    {
+      "id": "$contact",
+      "doc": "Receives HubSpot contact events: creation, association change, deletion, privacy deletion, property change, merge, and restore.",
+      "type": {
+        "name": "ContactService"
+      },
+      "concrete": true,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": true
+      }
+    }
+  ]
+}
