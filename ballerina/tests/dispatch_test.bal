@@ -27,6 +27,7 @@ const TRIGGER_PAYLOAD_DIR = "tests/resources/trigger_payloads";
 const TRIGGER_TEST_CALLBACK_URL = "test-callbackUrl-value";
 
 isolated map<boolean> triggerFired = {};
+isolated map<json> boundPayloads = {};
 
 listener Listener triggerTestListener = check new ({webhookSecret: TRIGGER_TEST_SECRET, callbackUrl: TRIGGER_TEST_CALLBACK_URL}, TRIGGER_TEST_PORT);
 
@@ -292,7 +293,7 @@ service ConversationService on triggerTestListener {
     }
 }
 
-isolated function sendSignedTriggerWebhook(string headerValue, string eventIdentifier) returns http:Response|error {
+isolated function sendSignedTriggerWebhook(string eventIdentifier) returns http:Response|error {
     byte[] body = check io:fileReadBytes(string `${TRIGGER_PAYLOAD_DIR}/${eventIdentifier}.json`);
     string bodyText = check string:fromBytes(body);
     string xHubspotRequestTimestampHeaderValue = (time:utcNow()[0] * 1000).toString();
@@ -320,287 +321,287 @@ function waitForDispatch(string trackerKey) returns boolean {
 
 @test:Config {}
 function testDealDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.deletion", "deal.deletion");
+    http:Response response = check sendSignedTriggerWebhook("deal.deletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("DealService.onDealDeletion"), "DealService.onDealDeletion should have fired");
 }
 
 @test:Config {}
 function testDealCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.creation", "deal.creation");
+    http:Response response = check sendSignedTriggerWebhook("deal.creation");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("DealService.onDealCreation"), "DealService.onDealCreation should have fired");
 }
 
 @test:Config {}
 function testDealMergeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.merge", "deal.merge");
+    http:Response response = check sendSignedTriggerWebhook("deal.merge");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("DealService.onDealMerge"), "DealService.onDealMerge should have fired");
 }
 
 @test:Config {}
 function testDealPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.propertyChange", "deal.propertyChange");
+    http:Response response = check sendSignedTriggerWebhook("deal.propertyChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("DealService.onDealPropertyChange"), "DealService.onDealPropertyChange should have fired");
 }
 
 @test:Config {}
 function testDealRestoreDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.restore", "deal.restore");
+    http:Response response = check sendSignedTriggerWebhook("deal.restore");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("DealService.onDealRestore"), "DealService.onDealRestore should have fired");
 }
 
 @test:Config {}
 function testDealAssociationChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.associationChange", "deal.associationChange");
+    http:Response response = check sendSignedTriggerWebhook("deal.associationChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("DealService.onDealAssociationChange"), "DealService.onDealAssociationChange should have fired");
 }
 
 @test:Config {}
 function testProductPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("product.propertyChange", "product.propertyChange");
+    http:Response response = check sendSignedTriggerWebhook("product.propertyChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ProductService.onProductPropertyChange"), "ProductService.onProductPropertyChange should have fired");
 }
 
 @test:Config {}
 function testProductDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("product.deletion", "product.deletion");
+    http:Response response = check sendSignedTriggerWebhook("product.deletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ProductService.onProductDeletion"), "ProductService.onProductDeletion should have fired");
 }
 
 @test:Config {}
 function testProductMergeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("product.merge", "product.merge");
+    http:Response response = check sendSignedTriggerWebhook("product.merge");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ProductService.onProductMerge"), "ProductService.onProductMerge should have fired");
 }
 
 @test:Config {}
 function testProductRestoreDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("product.restore", "product.restore");
+    http:Response response = check sendSignedTriggerWebhook("product.restore");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ProductService.onProductRestore"), "ProductService.onProductRestore should have fired");
 }
 
 @test:Config {}
 function testProductCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("product.creation", "product.creation");
+    http:Response response = check sendSignedTriggerWebhook("product.creation");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ProductService.onProductCreation"), "ProductService.onProductCreation should have fired");
 }
 
 @test:Config {}
 function testLineItemMergeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.merge", "line_item.merge");
+    http:Response response = check sendSignedTriggerWebhook("line_item.merge");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("LineItemService.onLineItemMerge"), "LineItemService.onLineItemMerge should have fired");
 }
 
 @test:Config {}
 function testLineItemDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.deletion", "line_item.deletion");
+    http:Response response = check sendSignedTriggerWebhook("line_item.deletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("LineItemService.onLineItemDeletion"), "LineItemService.onLineItemDeletion should have fired");
 }
 
 @test:Config {}
 function testLineItemPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.propertyChange", "line_item.propertyChange");
+    http:Response response = check sendSignedTriggerWebhook("line_item.propertyChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("LineItemService.onLineItemPropertyChange"), "LineItemService.onLineItemPropertyChange should have fired");
 }
 
 @test:Config {}
 function testLineItemRestoreDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.restore", "line_item.restore");
+    http:Response response = check sendSignedTriggerWebhook("line_item.restore");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("LineItemService.onLineItemRestore"), "LineItemService.onLineItemRestore should have fired");
 }
 
 @test:Config {}
 function testLineItemAssociationChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.associationChange", "line_item.associationChange");
+    http:Response response = check sendSignedTriggerWebhook("line_item.associationChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("LineItemService.onLineItemAssociationChange"), "LineItemService.onLineItemAssociationChange should have fired");
 }
 
 @test:Config {}
 function testLineItemCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.creation", "line_item.creation");
+    http:Response response = check sendSignedTriggerWebhook("line_item.creation");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("LineItemService.onLineItemCreation"), "LineItemService.onLineItemCreation should have fired");
 }
 
 @test:Config {}
 function testTicketPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.propertyChange", "ticket.propertyChange");
+    http:Response response = check sendSignedTriggerWebhook("ticket.propertyChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("TicketService.onTicketPropertyChange"), "TicketService.onTicketPropertyChange should have fired");
 }
 
 @test:Config {}
 function testTicketDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.deletion", "ticket.deletion");
+    http:Response response = check sendSignedTriggerWebhook("ticket.deletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("TicketService.onTicketDeletion"), "TicketService.onTicketDeletion should have fired");
 }
 
 @test:Config {}
 function testTicketCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.creation", "ticket.creation");
+    http:Response response = check sendSignedTriggerWebhook("ticket.creation");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("TicketService.onTicketCreation"), "TicketService.onTicketCreation should have fired");
 }
 
 @test:Config {}
 function testTicketMergeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.merge", "ticket.merge");
+    http:Response response = check sendSignedTriggerWebhook("ticket.merge");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("TicketService.onTicketMerge"), "TicketService.onTicketMerge should have fired");
 }
 
 @test:Config {}
 function testTicketRestoreDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.restore", "ticket.restore");
+    http:Response response = check sendSignedTriggerWebhook("ticket.restore");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("TicketService.onTicketRestore"), "TicketService.onTicketRestore should have fired");
 }
 
 @test:Config {}
 function testTicketAssociationChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.associationChange", "ticket.associationChange");
+    http:Response response = check sendSignedTriggerWebhook("ticket.associationChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("TicketService.onTicketAssociationChange"), "TicketService.onTicketAssociationChange should have fired");
 }
 
 @test:Config {}
 function testContactCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("contact.creation", "contact.creation");
+    http:Response response = check sendSignedTriggerWebhook("contact.creation");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ContactService.onContactCreation"), "ContactService.onContactCreation should have fired");
 }
 
 @test:Config {}
 function testContactAssociationChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("contact.associationChange", "contact.associationChange");
+    http:Response response = check sendSignedTriggerWebhook("contact.associationChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ContactService.onContactAssociationChange"), "ContactService.onContactAssociationChange should have fired");
 }
 
 @test:Config {}
 function testContactDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("contact.deletion", "contact.deletion");
+    http:Response response = check sendSignedTriggerWebhook("contact.deletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ContactService.onContactDeletion"), "ContactService.onContactDeletion should have fired");
 }
 
 @test:Config {}
 function testContactPrivacyDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("contact.privacyDeletion", "contact.privacyDeletion");
+    http:Response response = check sendSignedTriggerWebhook("contact.privacyDeletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ContactService.onContactPrivacyDeletion"), "ContactService.onContactPrivacyDeletion should have fired");
 }
 
 @test:Config {}
 function testContactPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("contact.propertyChange", "contact.propertyChange");
+    http:Response response = check sendSignedTriggerWebhook("contact.propertyChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ContactService.onContactPropertyChange"), "ContactService.onContactPropertyChange should have fired");
 }
 
 @test:Config {}
 function testContactMergeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("contact.merge", "contact.merge");
+    http:Response response = check sendSignedTriggerWebhook("contact.merge");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ContactService.onContactMerge"), "ContactService.onContactMerge should have fired");
 }
 
 @test:Config {}
 function testContactRestoreDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("contact.restore", "contact.restore");
+    http:Response response = check sendSignedTriggerWebhook("contact.restore");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ContactService.onContactRestore"), "ContactService.onContactRestore should have fired");
 }
 
 @test:Config {}
 function testCompanyDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.deletion", "company.deletion");
+    http:Response response = check sendSignedTriggerWebhook("company.deletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("CompanyService.onCompanyDeletion"), "CompanyService.onCompanyDeletion should have fired");
 }
 
 @test:Config {}
 function testCompanyRestoreDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.restore", "company.restore");
+    http:Response response = check sendSignedTriggerWebhook("company.restore");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("CompanyService.onCompanyRestore"), "CompanyService.onCompanyRestore should have fired");
 }
 
 @test:Config {}
 function testCompanyMergeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.merge", "company.merge");
+    http:Response response = check sendSignedTriggerWebhook("company.merge");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("CompanyService.onCompanyMerge"), "CompanyService.onCompanyMerge should have fired");
 }
 
 @test:Config {}
 function testCompanyPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.propertyChange", "company.propertyChange");
+    http:Response response = check sendSignedTriggerWebhook("company.propertyChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("CompanyService.onCompanyPropertyChange"), "CompanyService.onCompanyPropertyChange should have fired");
 }
 
 @test:Config {}
 function testCompanyCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.creation", "company.creation");
+    http:Response response = check sendSignedTriggerWebhook("company.creation");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("CompanyService.onCompanyCreation"), "CompanyService.onCompanyCreation should have fired");
 }
 
 @test:Config {}
 function testCompanyAssociationChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.associationChange", "company.associationChange");
+    http:Response response = check sendSignedTriggerWebhook("company.associationChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("CompanyService.onCompanyAssociationChange"), "CompanyService.onCompanyAssociationChange should have fired");
 }
 
 @test:Config {}
 function testConversationCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("conversation.creation", "conversation.creation");
+    http:Response response = check sendSignedTriggerWebhook("conversation.creation");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ConversationService.onConversationCreation"), "ConversationService.onConversationCreation should have fired");
 }
 
 @test:Config {}
 function testConversationPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("conversation.propertyChange", "conversation.propertyChange");
+    http:Response response = check sendSignedTriggerWebhook("conversation.propertyChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ConversationService.onConversationPropertyChange"), "ConversationService.onConversationPropertyChange should have fired");
 }
 
 @test:Config {}
 function testConversationPrivacyDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("conversation.privacyDeletion", "conversation.privacyDeletion");
+    http:Response response = check sendSignedTriggerWebhook("conversation.privacyDeletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ConversationService.onConversationPrivacyDeletion"), "ConversationService.onConversationPrivacyDeletion should have fired");
 }
 
 @test:Config {}
 function testConversationNewMessageDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("conversation.newMessage", "conversation.newMessage");
+    http:Response response = check sendSignedTriggerWebhook("conversation.newMessage");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ConversationService.onConversationNewMessage"), "ConversationService.onConversationNewMessage should have fired");
 }
 
 @test:Config {}
 function testConversationDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("conversation.deletion", "conversation.deletion");
+    http:Response response = check sendSignedTriggerWebhook("conversation.deletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ConversationService.onConversationDeletion"), "ConversationService.onConversationDeletion should have fired");
 }

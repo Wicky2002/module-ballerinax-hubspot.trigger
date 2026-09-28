@@ -22,13 +22,16 @@ public type ListenerConfig record {
     string callbackUrl = "";
 };
 
-# A single webhook notification HubSpot sends when a subscribed CRM event occurs (property change, association change, merge, or new conversation message).
+# A single webhook notification HubSpot sends when a subscribed CRM event occurs (property change, association
+# change, merge, or new conversation message).
 public type WebhookEvent record {|
     # The ID of the event that triggered this notification. This value is not guaranteed to be unique.
     int eventId;
     # The ID of the subscription that triggered a notification about the event.
     int subscriptionId?;
-    # The customer's (HubSpot account ID)[https://knowledge.hubspot.com/account/manage-multiple-hubspot-accounts?_ga=2.56562472.2054080341.1656611011-2068059512.1656469161#check-your-current-account] where the event occurred.
+    # The customer's (HubSpot account
+    # ID)[https://knowledge.hubspot.com/account/manage-multiple-hubspot-accounts?_ga=2.56562472.2054080341.1656611011-2068059512.1656469161#check-your-current-account]
+    # where the event occurred.
     int portalId?;
     # The ID of the HubSpot application
     int appId?;
@@ -36,13 +39,16 @@ public type WebhookEvent record {|
     int occurredAt?;
     # Type of the event
     string subscriptionType?;
-    # Starting at 0, which number attempt this is to notify your service of this event. If your service times-out or throws an error as describe in the Retries section below, HubSpot will attempt to send the notification again.
+    # Starting at 0, which number attempt this is to notify your service of this event. If your service times-out or
+    # throws an error as describe in the Retries section below, HubSpot will attempt to send the notification again.
     int attemptNumber?;
-    # The ID of the object that was created, changed, or deleted. For contacts this is the contact ID; for companies, the company ID; for deals, the deal ID; and for conversations the thread ID
+    # The ID of the object that was created, changed, or deleted. For contacts this is the contact ID; for companies,
+    # the company ID; for deals, the deal ID; and for conversations the thread ID
     int objectId?;
     # The source of the change. This can be any of the change sources that appear in contact property histories.
     string changeSource?;
-    # The ID of the source of the change. The format depends on the change source (for example, "userId:12345" for changes made by a user in the CRM UI).
+    # The ID of the source of the change. The format depends on the change source (for example, "userId:12345" for
+    # changes made by a user in the CRM UI).
     string sourceId?;
     # Flag of the change.
     string changeFlag?;

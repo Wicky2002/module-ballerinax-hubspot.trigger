@@ -15,10 +15,13 @@
 // under the License.
 
 import ballerina/crypto;
+import ballerina/data.jsondata;
 import ballerina/http;
 import ballerina/log;
 import ballerina/time;
 import ballerinax/asyncapi.native.handler;
+
+final readonly & map<typedesc<GenericDataType>> EVENT_PAYLOAD_TYPES = {"ticket.propertyChange": WebhookEvent, "ticket.deletion": WebhookEvent, "ticket.creation": WebhookEvent, "ticket.merge": WebhookEvent, "ticket.restore": WebhookEvent, "ticket.associationChange": WebhookEvent, "company.deletion": WebhookEvent, "company.restore": WebhookEvent, "company.merge": WebhookEvent, "company.propertyChange": WebhookEvent, "company.creation": WebhookEvent, "company.associationChange": WebhookEvent, "line_item.merge": WebhookEvent, "line_item.deletion": WebhookEvent, "line_item.propertyChange": WebhookEvent, "line_item.restore": WebhookEvent, "line_item.associationChange": WebhookEvent, "line_item.creation": WebhookEvent, "product.propertyChange": WebhookEvent, "product.deletion": WebhookEvent, "product.merge": WebhookEvent, "product.restore": WebhookEvent, "product.creation": WebhookEvent, "conversation.creation": WebhookEvent, "conversation.propertyChange": WebhookEvent, "conversation.privacyDeletion": WebhookEvent, "conversation.newMessage": WebhookEvent, "conversation.deletion": WebhookEvent, "deal.deletion": WebhookEvent, "deal.creation": WebhookEvent, "deal.merge": WebhookEvent, "deal.propertyChange": WebhookEvent, "deal.restore": WebhookEvent, "deal.associationChange": WebhookEvent, "contact.creation": WebhookEvent, "contact.associationChange": WebhookEvent, "contact.deletion": WebhookEvent, "contact.privacyDeletion": WebhookEvent, "contact.propertyChange": WebhookEvent, "contact.merge": WebhookEvent, "contact.restore": WebhookEvent};
 
 service class DispatcherService {
     *http:Service;
@@ -46,6 +49,17 @@ service class DispatcherService {
         _ = self.services.remove(serviceType);
     }
 
+    private isolated function parseEventPayload(json payload, string eventKey, string? fallbackKey = ()) returns GenericDataType|error {
+        typedesc<GenericDataType>? targetType = EVENT_PAYLOAD_TYPES[eventKey];
+        if targetType is () && fallbackKey is string {
+            targetType = EVENT_PAYLOAD_TYPES[fallbackKey];
+        }
+        if targetType is () {
+            return error(string `Unrecognized event identifier: ${eventKey}`);
+        }
+        return jsondata:parseAsType(payload, {allowDataProjection: {nilAsOptionalField: true, absentAsNilableType: true}}, targetType);
+    }
+
     resource function post .(http:Caller caller, http:Request request) returns error? {
         error? verifyResult = self.verifyWebhookSignature(request, self.webhookSecret);
         if verifyResult is error {
@@ -70,7 +84,7 @@ service class DispatcherService {
                 continue;
             }
             string elementEventType = eventTypeField.toString();
-            GenericDataType|error genericDataTypeResult = event.cloneWithType(GenericDataType);
+            GenericDataType|error genericDataTypeResult = self.parseEventPayload(event, elementEventType);
             if genericDataTypeResult is error {
                 log:printError("DISPATCH_FAILED", genericDataTypeResult);
                 continue;
