@@ -350,8 +350,9 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "asyncapi.native.handler"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = [
+	{org = "ballerina", name = "data.jsondata"},
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerinai", name = "observe"}
 ]
@@ -362,7 +363,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "hubspot.trigger"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
 	{org = "ballerina", name = "cloud"},
 	{org = "ballerina", name = "crypto"},
@@ -377,4 +378,3 @@ dependencies = [
 modules = [
 	{org = "ballerinax", packageName = "hubspot.trigger", moduleName = "hubspot.trigger"}
 ]
-

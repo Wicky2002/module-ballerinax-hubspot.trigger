@@ -15,13 +15,10 @@
 // under the License.
 
 import ballerina/crypto;
-import ballerina/data.jsondata;
 import ballerina/http;
 import ballerina/log;
 import ballerina/time;
 import ballerinax/asyncapi.native.handler;
-
-final readonly & map<typedesc<GenericDataType>> EVENT_PAYLOAD_TYPES = {"ticket.propertyChange": WebhookEvent, "ticket.deletion": WebhookEvent, "ticket.creation": WebhookEvent, "ticket.merge": WebhookEvent, "ticket.restore": WebhookEvent, "ticket.associationChange": WebhookEvent, "company.deletion": WebhookEvent, "company.restore": WebhookEvent, "company.merge": WebhookEvent, "company.propertyChange": WebhookEvent, "company.creation": WebhookEvent, "company.associationChange": WebhookEvent, "line_item.merge": WebhookEvent, "line_item.deletion": WebhookEvent, "line_item.propertyChange": WebhookEvent, "line_item.restore": WebhookEvent, "line_item.associationChange": WebhookEvent, "line_item.creation": WebhookEvent, "product.propertyChange": WebhookEvent, "product.deletion": WebhookEvent, "product.merge": WebhookEvent, "product.restore": WebhookEvent, "product.creation": WebhookEvent, "conversation.creation": WebhookEvent, "conversation.propertyChange": WebhookEvent, "conversation.privacyDeletion": WebhookEvent, "conversation.newMessage": WebhookEvent, "conversation.deletion": WebhookEvent, "deal.deletion": WebhookEvent, "deal.creation": WebhookEvent, "deal.merge": WebhookEvent, "deal.propertyChange": WebhookEvent, "deal.restore": WebhookEvent, "deal.associationChange": WebhookEvent, "contact.creation": WebhookEvent, "contact.associationChange": WebhookEvent, "contact.deletion": WebhookEvent, "contact.privacyDeletion": WebhookEvent, "contact.propertyChange": WebhookEvent, "contact.merge": WebhookEvent, "contact.restore": WebhookEvent};
 
 service class DispatcherService {
     *http:Service;
@@ -49,17 +46,6 @@ service class DispatcherService {
         _ = self.services.remove(serviceType);
     }
 
-    private isolated function parseEventPayload(json payload, string eventKey, string? fallbackKey = ()) returns GenericDataType|error {
-        typedesc<GenericDataType>? targetType = EVENT_PAYLOAD_TYPES[eventKey];
-        if targetType is () && fallbackKey is string {
-            targetType = EVENT_PAYLOAD_TYPES[fallbackKey];
-        }
-        if targetType is () {
-            return error(string `Unrecognized event identifier: ${eventKey}`);
-        }
-        return jsondata:parseAsType(payload, {allowDataProjection: {nilAsOptionalField: true, absentAsNilableType: true}}, targetType);
-    }
-
     resource function post .(http:Caller caller, http:Request request) returns error? {
         error? verifyResult = self.verifyWebhookSignature(request, self.webhookSecret);
         if verifyResult is error {
@@ -84,14 +70,11 @@ service class DispatcherService {
                 continue;
             }
             string elementEventType = eventTypeField.toString();
-            GenericDataType|error genericDataTypeResult = self.parseEventPayload(event, elementEventType);
-            if genericDataTypeResult is error {
-                log:printError("DISPATCH_FAILED", genericDataTypeResult);
-                continue;
-            }
-            error? dispatchResult = self.matchRemoteFunc(genericDataTypeResult, elementEventType);
+            boolean|error dispatchResult = self.matchRemoteFunc(event, elementEventType);
             if dispatchResult is error {
                 log:printError("DISPATCH_FAILED", dispatchResult);
+            } else if !dispatchResult {
+                log:printWarn("NO_HANDLER_FOR_EVENT", eventIdentifier = elementEventType);
             }
         }
     }
@@ -130,178 +113,244 @@ service class DispatcherService {
         }
     }
 
-    private isolated function matchRemoteFunc(GenericDataType genericDataType, string eventType) returns error? {
-        check self.matchRemoteFuncForTicket(genericDataType);
-        check self.matchRemoteFuncForCompany(genericDataType);
-        check self.matchRemoteFuncForLineItem(genericDataType);
-        check self.matchRemoteFuncForProduct(genericDataType);
-        check self.matchRemoteFuncForConversation(genericDataType);
-        check self.matchRemoteFuncForDeal(genericDataType);
-        check self.matchRemoteFuncForContact(genericDataType);
+    private isolated function matchRemoteFunc(json payload, string eventType) returns boolean|error {
+        if check self.matchRemoteFuncForTicket(payload) {
+            return true;
+        }
+        if check self.matchRemoteFuncForCompany(payload) {
+            return true;
+        }
+        if check self.matchRemoteFuncForLineItem(payload) {
+            return true;
+        }
+        if check self.matchRemoteFuncForProduct(payload) {
+            return true;
+        }
+        if check self.matchRemoteFuncForConversation(payload) {
+            return true;
+        }
+        if check self.matchRemoteFuncForDeal(payload) {
+            return true;
+        }
+        if check self.matchRemoteFuncForContact(payload) {
+            return true;
+        }
+        return false;
     }
 
-    private isolated function matchRemoteFuncForTicket(GenericDataType genericDataType) returns error? {
-        match genericDataType.subscriptionType {
+    private isolated function matchRemoteFuncForTicket(json payload) returns boolean|error {
+        match payload.subscriptionType {
             "ticket.propertyChange" => {
-                check self.executeRemoteFunc(genericDataType, "ticket.propertyChange", "TicketService", "onTicketPropertyChange");
+                check self.executeRemoteFunc(payload, "ticket.propertyChange", "TicketService", "onTicketPropertyChange");
+                return true;
             }
             "ticket.deletion" => {
-                check self.executeRemoteFunc(genericDataType, "ticket.deletion", "TicketService", "onTicketDeletion");
+                check self.executeRemoteFunc(payload, "ticket.deletion", "TicketService", "onTicketDeletion");
+                return true;
             }
             "ticket.creation" => {
-                check self.executeRemoteFunc(genericDataType, "ticket.creation", "TicketService", "onTicketCreation");
+                check self.executeRemoteFunc(payload, "ticket.creation", "TicketService", "onTicketCreation");
+                return true;
             }
             "ticket.merge" => {
-                check self.executeRemoteFunc(genericDataType, "ticket.merge", "TicketService", "onTicketMerge");
+                check self.executeRemoteFunc(payload, "ticket.merge", "TicketService", "onTicketMerge");
+                return true;
             }
             "ticket.restore" => {
-                check self.executeRemoteFunc(genericDataType, "ticket.restore", "TicketService", "onTicketRestore");
+                check self.executeRemoteFunc(payload, "ticket.restore", "TicketService", "onTicketRestore");
+                return true;
             }
             "ticket.associationChange" => {
-                check self.executeRemoteFunc(genericDataType, "ticket.associationChange", "TicketService", "onTicketAssociationChange");
+                check self.executeRemoteFunc(payload, "ticket.associationChange", "TicketService", "onTicketAssociationChange");
+                return true;
             }
         }
+        return false;
     }
 
-    private isolated function matchRemoteFuncForCompany(GenericDataType genericDataType) returns error? {
-        match genericDataType.subscriptionType {
+    private isolated function matchRemoteFuncForCompany(json payload) returns boolean|error {
+        match payload.subscriptionType {
             "company.deletion" => {
-                check self.executeRemoteFunc(genericDataType, "company.deletion", "CompanyService", "onCompanyDeletion");
+                check self.executeRemoteFunc(payload, "company.deletion", "CompanyService", "onCompanyDeletion");
+                return true;
             }
             "company.restore" => {
-                check self.executeRemoteFunc(genericDataType, "company.restore", "CompanyService", "onCompanyRestore");
+                check self.executeRemoteFunc(payload, "company.restore", "CompanyService", "onCompanyRestore");
+                return true;
             }
             "company.merge" => {
-                check self.executeRemoteFunc(genericDataType, "company.merge", "CompanyService", "onCompanyMerge");
+                check self.executeRemoteFunc(payload, "company.merge", "CompanyService", "onCompanyMerge");
+                return true;
             }
             "company.propertyChange" => {
-                check self.executeRemoteFunc(genericDataType, "company.propertyChange", "CompanyService", "onCompanyPropertyChange");
+                check self.executeRemoteFunc(payload, "company.propertyChange", "CompanyService", "onCompanyPropertyChange");
+                return true;
             }
             "company.creation" => {
-                check self.executeRemoteFunc(genericDataType, "company.creation", "CompanyService", "onCompanyCreation");
+                check self.executeRemoteFunc(payload, "company.creation", "CompanyService", "onCompanyCreation");
+                return true;
             }
             "company.associationChange" => {
-                check self.executeRemoteFunc(genericDataType, "company.associationChange", "CompanyService", "onCompanyAssociationChange");
+                check self.executeRemoteFunc(payload, "company.associationChange", "CompanyService", "onCompanyAssociationChange");
+                return true;
             }
         }
+        return false;
     }
 
-    private isolated function matchRemoteFuncForLineItem(GenericDataType genericDataType) returns error? {
-        match genericDataType.subscriptionType {
+    private isolated function matchRemoteFuncForLineItem(json payload) returns boolean|error {
+        match payload.subscriptionType {
             "line_item.merge" => {
-                check self.executeRemoteFunc(genericDataType, "line_item.merge", "LineItemService", "onLineItemMerge");
+                check self.executeRemoteFunc(payload, "line_item.merge", "LineItemService", "onLineItemMerge");
+                return true;
             }
             "line_item.deletion" => {
-                check self.executeRemoteFunc(genericDataType, "line_item.deletion", "LineItemService", "onLineItemDeletion");
+                check self.executeRemoteFunc(payload, "line_item.deletion", "LineItemService", "onLineItemDeletion");
+                return true;
             }
             "line_item.propertyChange" => {
-                check self.executeRemoteFunc(genericDataType, "line_item.propertyChange", "LineItemService", "onLineItemPropertyChange");
+                check self.executeRemoteFunc(payload, "line_item.propertyChange", "LineItemService", "onLineItemPropertyChange");
+                return true;
             }
             "line_item.restore" => {
-                check self.executeRemoteFunc(genericDataType, "line_item.restore", "LineItemService", "onLineItemRestore");
+                check self.executeRemoteFunc(payload, "line_item.restore", "LineItemService", "onLineItemRestore");
+                return true;
             }
             "line_item.associationChange" => {
-                check self.executeRemoteFunc(genericDataType, "line_item.associationChange", "LineItemService", "onLineItemAssociationChange");
+                check self.executeRemoteFunc(payload, "line_item.associationChange", "LineItemService", "onLineItemAssociationChange");
+                return true;
             }
             "line_item.creation" => {
-                check self.executeRemoteFunc(genericDataType, "line_item.creation", "LineItemService", "onLineItemCreation");
+                check self.executeRemoteFunc(payload, "line_item.creation", "LineItemService", "onLineItemCreation");
+                return true;
             }
         }
+        return false;
     }
 
-    private isolated function matchRemoteFuncForProduct(GenericDataType genericDataType) returns error? {
-        match genericDataType.subscriptionType {
+    private isolated function matchRemoteFuncForProduct(json payload) returns boolean|error {
+        match payload.subscriptionType {
             "product.propertyChange" => {
-                check self.executeRemoteFunc(genericDataType, "product.propertyChange", "ProductService", "onProductPropertyChange");
+                check self.executeRemoteFunc(payload, "product.propertyChange", "ProductService", "onProductPropertyChange");
+                return true;
             }
             "product.deletion" => {
-                check self.executeRemoteFunc(genericDataType, "product.deletion", "ProductService", "onProductDeletion");
+                check self.executeRemoteFunc(payload, "product.deletion", "ProductService", "onProductDeletion");
+                return true;
             }
             "product.merge" => {
-                check self.executeRemoteFunc(genericDataType, "product.merge", "ProductService", "onProductMerge");
+                check self.executeRemoteFunc(payload, "product.merge", "ProductService", "onProductMerge");
+                return true;
             }
             "product.restore" => {
-                check self.executeRemoteFunc(genericDataType, "product.restore", "ProductService", "onProductRestore");
+                check self.executeRemoteFunc(payload, "product.restore", "ProductService", "onProductRestore");
+                return true;
             }
             "product.creation" => {
-                check self.executeRemoteFunc(genericDataType, "product.creation", "ProductService", "onProductCreation");
+                check self.executeRemoteFunc(payload, "product.creation", "ProductService", "onProductCreation");
+                return true;
             }
         }
+        return false;
     }
 
-    private isolated function matchRemoteFuncForConversation(GenericDataType genericDataType) returns error? {
-        match genericDataType.subscriptionType {
+    private isolated function matchRemoteFuncForConversation(json payload) returns boolean|error {
+        match payload.subscriptionType {
             "conversation.creation" => {
-                check self.executeRemoteFunc(genericDataType, "conversation.creation", "ConversationService", "onConversationCreation");
+                check self.executeRemoteFunc(payload, "conversation.creation", "ConversationService", "onConversationCreation");
+                return true;
             }
             "conversation.propertyChange" => {
-                check self.executeRemoteFunc(genericDataType, "conversation.propertyChange", "ConversationService", "onConversationPropertyChange");
+                check self.executeRemoteFunc(payload, "conversation.propertyChange", "ConversationService", "onConversationPropertyChange");
+                return true;
             }
             "conversation.privacyDeletion" => {
-                check self.executeRemoteFunc(genericDataType, "conversation.privacyDeletion", "ConversationService", "onConversationPrivacyDeletion");
+                check self.executeRemoteFunc(payload, "conversation.privacyDeletion", "ConversationService", "onConversationPrivacyDeletion");
+                return true;
             }
             "conversation.newMessage" => {
-                check self.executeRemoteFunc(genericDataType, "conversation.newMessage", "ConversationService", "onConversationNewMessage");
+                check self.executeRemoteFunc(payload, "conversation.newMessage", "ConversationService", "onConversationNewMessage");
+                return true;
             }
             "conversation.deletion" => {
-                check self.executeRemoteFunc(genericDataType, "conversation.deletion", "ConversationService", "onConversationDeletion");
+                check self.executeRemoteFunc(payload, "conversation.deletion", "ConversationService", "onConversationDeletion");
+                return true;
             }
         }
+        return false;
     }
 
-    private isolated function matchRemoteFuncForDeal(GenericDataType genericDataType) returns error? {
-        match genericDataType.subscriptionType {
+    private isolated function matchRemoteFuncForDeal(json payload) returns boolean|error {
+        match payload.subscriptionType {
             "deal.deletion" => {
-                check self.executeRemoteFunc(genericDataType, "deal.deletion", "DealService", "onDealDeletion");
+                check self.executeRemoteFunc(payload, "deal.deletion", "DealService", "onDealDeletion");
+                return true;
             }
             "deal.creation" => {
-                check self.executeRemoteFunc(genericDataType, "deal.creation", "DealService", "onDealCreation");
+                check self.executeRemoteFunc(payload, "deal.creation", "DealService", "onDealCreation");
+                return true;
             }
             "deal.merge" => {
-                check self.executeRemoteFunc(genericDataType, "deal.merge", "DealService", "onDealMerge");
+                check self.executeRemoteFunc(payload, "deal.merge", "DealService", "onDealMerge");
+                return true;
             }
             "deal.propertyChange" => {
-                check self.executeRemoteFunc(genericDataType, "deal.propertyChange", "DealService", "onDealPropertyChange");
+                check self.executeRemoteFunc(payload, "deal.propertyChange", "DealService", "onDealPropertyChange");
+                return true;
             }
             "deal.restore" => {
-                check self.executeRemoteFunc(genericDataType, "deal.restore", "DealService", "onDealRestore");
+                check self.executeRemoteFunc(payload, "deal.restore", "DealService", "onDealRestore");
+                return true;
             }
             "deal.associationChange" => {
-                check self.executeRemoteFunc(genericDataType, "deal.associationChange", "DealService", "onDealAssociationChange");
+                check self.executeRemoteFunc(payload, "deal.associationChange", "DealService", "onDealAssociationChange");
+                return true;
             }
         }
+        return false;
     }
 
-    private isolated function matchRemoteFuncForContact(GenericDataType genericDataType) returns error? {
-        match genericDataType.subscriptionType {
+    private isolated function matchRemoteFuncForContact(json payload) returns boolean|error {
+        match payload.subscriptionType {
             "contact.creation" => {
-                check self.executeRemoteFunc(genericDataType, "contact.creation", "ContactService", "onContactCreation");
+                check self.executeRemoteFunc(payload, "contact.creation", "ContactService", "onContactCreation");
+                return true;
             }
             "contact.associationChange" => {
-                check self.executeRemoteFunc(genericDataType, "contact.associationChange", "ContactService", "onContactAssociationChange");
+                check self.executeRemoteFunc(payload, "contact.associationChange", "ContactService", "onContactAssociationChange");
+                return true;
             }
             "contact.deletion" => {
-                check self.executeRemoteFunc(genericDataType, "contact.deletion", "ContactService", "onContactDeletion");
+                check self.executeRemoteFunc(payload, "contact.deletion", "ContactService", "onContactDeletion");
+                return true;
             }
             "contact.privacyDeletion" => {
-                check self.executeRemoteFunc(genericDataType, "contact.privacyDeletion", "ContactService", "onContactPrivacyDeletion");
+                check self.executeRemoteFunc(payload, "contact.privacyDeletion", "ContactService", "onContactPrivacyDeletion");
+                return true;
             }
             "contact.propertyChange" => {
-                check self.executeRemoteFunc(genericDataType, "contact.propertyChange", "ContactService", "onContactPropertyChange");
+                check self.executeRemoteFunc(payload, "contact.propertyChange", "ContactService", "onContactPropertyChange");
+                return true;
             }
             "contact.merge" => {
-                check self.executeRemoteFunc(genericDataType, "contact.merge", "ContactService", "onContactMerge");
+                check self.executeRemoteFunc(payload, "contact.merge", "ContactService", "onContactMerge");
+                return true;
             }
             "contact.restore" => {
-                check self.executeRemoteFunc(genericDataType, "contact.restore", "ContactService", "onContactRestore");
+                check self.executeRemoteFunc(payload, "contact.restore", "ContactService", "onContactRestore");
+                return true;
             }
         }
+        return false;
     }
 
-    private isolated function executeRemoteFunc(GenericDataType genericEvent, string eventName, string serviceTypeStr, string eventFunction) returns error? {
+    private isolated function executeRemoteFunc(json payload, string eventName, string serviceTypeStr, string eventFunction) returns error? {
         GenericServiceType? genericService = self.services[serviceTypeStr];
         if genericService is GenericServiceType {
-            check self.nativeHandler.invokeRemoteFunction(genericEvent, eventName, eventFunction, genericService);
+            any boundEvent = check self.nativeHandler.bindEventPayload(genericService, eventFunction, payload);
+            check self.nativeHandler.invokeRemoteFunction(boundEvent, eventName, eventFunction, genericService);
+        } else {
+            log:printDebug("SERVICE_NOT_ATTACHED", serviceType = serviceTypeStr, eventName = eventName);
         }
     }
 }
