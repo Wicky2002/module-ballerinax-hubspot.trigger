@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.0] - 2026-09-28
+## [0.13.0] - 2026-10-26
 ### Added
 - [Services on the trigger listener are listed by `bal build --export-endpoints`](https://github.com/ballerina-platform/ballerina-library/issues/9312), through a compiler plugin packaged with the trigger. Ballerina versions without `--export-endpoints` build as before.
 
@@ -18,6 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - The package now includes its `metadata/` folder (trigger metadata and icons). The `Ballerina.toml` template the build writes from was missing `include = ["metadata/**"]`, so builds dropped it.
 
-## [0.1.0] - 2026-08-24
+## [0.12.0] - 2026-09-24
 ### Added
 - Initial release of the HubSpot trigger as its own package, migrated out of the `asyncapi-triggers` monorepo (41 events across 7 service types), with HMAC-SHA256 v3 signature verification and batched-event delivery support.

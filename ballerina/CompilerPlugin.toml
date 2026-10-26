@@ -3,4 +3,4 @@ id = "asyncapi-compiler-plugin"
 class = "io.ballerina.asyncapi.trigger.plugin.AsyncAPICompilerPlugin"
 
 [[dependency]]
-path = "../compiler-plugin/build/libs/hubspot.trigger-compiler-plugin-0.2.0-SNAPSHOT.jar"
+path = "../compiler-plugin/build/libs/hubspot.trigger-compiler-plugin-0.13.0-SNAPSHOT.jar"
