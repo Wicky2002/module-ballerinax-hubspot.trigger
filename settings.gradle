@@ -32,6 +32,8 @@ rootProject.name = 'module-ballerinax-hubspot.trigger'
 include ':hubspot.trigger-ballerina'
 
 project(':hubspot.trigger-ballerina').projectDir = file("ballerina")
+include ':hubspot.trigger-compiler-plugin'
+project(':hubspot.trigger-compiler-plugin').projectDir = file("compiler-plugin")
 
 develocity {
     buildScan {
