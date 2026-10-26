@@ -14,32 +14,62 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/cloud;
 import ballerina/http;
 
 @display {label: "HubSpot Subscription API", iconPath: "icon.png"}
 public class Listener {
     private http:Listener httpListener;
-    private DispatcherService dispatcherService;
+    private ListenerConfig listenerConfig;
+    private map<DispatcherService> dispatchers = {};
+    private [string, GenericServiceType][] attachments = [];
 
-    public function init(ListenerConfig listenerConfig = {}, @cloud:Expose int|http:Listener listenOn = 8090) returns error? {
+    public function init(ListenerConfig listenerConfig = {}, int|http:Listener listenOn = 8090) returns error? {
         if listenOn is http:Listener {
             self.httpListener = listenOn;
         } else {
             self.httpListener = check new (listenOn);
         }
-        self.dispatcherService = new DispatcherService(listenerConfig.webhookSecret, listenerConfig.callbackUrl);
-        check self.httpListener.attach(self.dispatcherService, ());
+        self.listenerConfig = listenerConfig;
     }
 
-    public isolated function attach(GenericServiceType serviceRef, () attachPoint) returns error? {
+    public isolated function attach(GenericServiceType serviceRef, string[]|string? attachPoint) returns error? {
         string serviceTypeStr = check self.getServiceTypeStr(serviceRef);
-        check self.dispatcherService.addServiceRef(serviceTypeStr, serviceRef);
+        string path = self.pathKey(attachPoint);
+        DispatcherService dispatcher;
+        DispatcherService? existing = self.dispatchers[path];
+        if existing is DispatcherService {
+            dispatcher = existing;
+        } else {
+            dispatcher = new (self.listenerConfig.webhookSecret, self.listenerConfig.callbackUrl);
+            check self.httpListener.attach(dispatcher, path == "" ? () : path);
+            self.dispatchers[path] = dispatcher;
+        }
+        check dispatcher.addServiceRef(serviceTypeStr, serviceRef);
+        self.attachments.push([path, serviceRef]);
     }
 
     public isolated function detach(GenericServiceType serviceRef) returns error? {
         string serviceTypeStr = check self.getServiceTypeStr(serviceRef);
-        check self.dispatcherService.removeServiceRef(serviceTypeStr);
+        foreach int i in 0 ..< self.attachments.length() {
+            string path = self.attachments[i][0];
+            if self.attachments[i][1] === serviceRef {
+                DispatcherService dispatcher = self.dispatchers.get(path);
+                check dispatcher.removeServiceRef(serviceTypeStr);
+                _ = self.attachments.remove(i);
+                boolean pathInUse = false;
+                foreach [string, GenericServiceType] attachment in self.attachments {
+                    if attachment[0] == path {
+                        pathInUse = true;
+                    }
+                }
+                if !pathInUse {
+                    check self.httpListener.detach(dispatcher);
+                    _ = self.dispatchers.remove(path);
+                }
+                return;
+            }
+        }
+        return error(string `Cannot detach the service of type ${serviceTypeStr}. Service has not been attached to the listener before`);
     }
 
     public isolated function 'start() returns error? {
@@ -56,17 +86,11 @@ public class Listener {
 
     private isolated function getServiceTypeStr(GenericServiceType serviceRef) returns string|error {
         match serviceRef {
-            var v if v is TicketService => {
-                return "TicketService";
-            }
             var v if v is CompanyService => {
                 return "CompanyService";
             }
-            var v if v is LineItemService => {
-                return "LineItemService";
-            }
-            var v if v is ProductService => {
-                return "ProductService";
+            var v if v is ContactService => {
+                return "ContactService";
             }
             var v if v is ConversationService => {
                 return "ConversationService";
@@ -74,12 +98,32 @@ public class Listener {
             var v if v is DealService => {
                 return "DealService";
             }
-            var v if v is ContactService => {
-                return "ContactService";
+            var v if v is TicketService => {
+                return "TicketService";
+            }
+            var v if v is ProductService => {
+                return "ProductService";
+            }
+            var v if v is LineItemService => {
+                return "LineItemService";
             }
             var _ => {
                 return error("Unrecognized service type attached to the listener");
             }
         }
+    }
+
+    private isolated function pathKey(string[]|string? attachPoint) returns string {
+        if attachPoint is () {
+            return "";
+        }
+        string path = attachPoint is string ? attachPoint : string:'join("/", ...attachPoint);
+        while path.startsWith("/") {
+            path = path.substring(1);
+        }
+        while path.endsWith("/") {
+            path = path.substring(0, path.length() - 1);
+        }
+        return path;
     }
 }

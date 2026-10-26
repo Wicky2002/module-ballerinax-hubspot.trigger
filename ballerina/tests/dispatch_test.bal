@@ -33,148 +33,40 @@ listener Listener triggerTestListener = check new ({webhookSecret: TRIGGER_TEST_
 
 final http:Client triggerClient = check new (string `http://localhost:${TRIGGER_TEST_PORT}`);
 
-service DealService on triggerTestListener {
-    isolated remote function onDealDeletion(WebhookEvent payload) returns error? {
+service CompanyService on triggerTestListener {
+    isolated remote function onCompanyCreation(WebhookEvent payload) returns error? {
         lock {
-            triggerFired["DealService.onDealDeletion"] = true;
+            triggerFired["CompanyService.onCompanyCreation"] = true;
         }
     }
 
-    isolated remote function onDealCreation(WebhookEvent payload) returns error? {
+    isolated remote function onCompanyDeletion(WebhookEvent payload) returns error? {
         lock {
-            triggerFired["DealService.onDealCreation"] = true;
+            triggerFired["CompanyService.onCompanyDeletion"] = true;
         }
     }
 
-    isolated remote function onDealMerge(WebhookEvent payload) returns error? {
+    isolated remote function onCompanyPropertyChange(WebhookEvent payload) returns error? {
         lock {
-            triggerFired["DealService.onDealMerge"] = true;
+            triggerFired["CompanyService.onCompanyPropertyChange"] = true;
         }
     }
 
-    isolated remote function onDealPropertyChange(WebhookEvent payload) returns error? {
+    isolated remote function onCompanyAssociationChange(WebhookEvent payload) returns error? {
         lock {
-            triggerFired["DealService.onDealPropertyChange"] = true;
+            triggerFired["CompanyService.onCompanyAssociationChange"] = true;
         }
     }
 
-    isolated remote function onDealRestore(WebhookEvent payload) returns error? {
+    isolated remote function onCompanyMerge(WebhookEvent payload) returns error? {
         lock {
-            triggerFired["DealService.onDealRestore"] = true;
+            triggerFired["CompanyService.onCompanyMerge"] = true;
         }
     }
 
-    isolated remote function onDealAssociationChange(WebhookEvent payload) returns error? {
+    isolated remote function onCompanyRestore(WebhookEvent payload) returns error? {
         lock {
-            triggerFired["DealService.onDealAssociationChange"] = true;
-        }
-    }
-}
-
-service ProductService on triggerTestListener {
-    isolated remote function onProductPropertyChange(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["ProductService.onProductPropertyChange"] = true;
-        }
-    }
-
-    isolated remote function onProductDeletion(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["ProductService.onProductDeletion"] = true;
-        }
-    }
-
-    isolated remote function onProductMerge(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["ProductService.onProductMerge"] = true;
-        }
-    }
-
-    isolated remote function onProductRestore(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["ProductService.onProductRestore"] = true;
-        }
-    }
-
-    isolated remote function onProductCreation(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["ProductService.onProductCreation"] = true;
-        }
-    }
-}
-
-service LineItemService on triggerTestListener {
-    isolated remote function onLineItemMerge(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["LineItemService.onLineItemMerge"] = true;
-        }
-    }
-
-    isolated remote function onLineItemDeletion(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["LineItemService.onLineItemDeletion"] = true;
-        }
-    }
-
-    isolated remote function onLineItemPropertyChange(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["LineItemService.onLineItemPropertyChange"] = true;
-        }
-    }
-
-    isolated remote function onLineItemRestore(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["LineItemService.onLineItemRestore"] = true;
-        }
-    }
-
-    isolated remote function onLineItemAssociationChange(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["LineItemService.onLineItemAssociationChange"] = true;
-        }
-    }
-
-    isolated remote function onLineItemCreation(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["LineItemService.onLineItemCreation"] = true;
-        }
-    }
-}
-
-service TicketService on triggerTestListener {
-    isolated remote function onTicketPropertyChange(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["TicketService.onTicketPropertyChange"] = true;
-        }
-    }
-
-    isolated remote function onTicketDeletion(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["TicketService.onTicketDeletion"] = true;
-        }
-    }
-
-    isolated remote function onTicketCreation(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["TicketService.onTicketCreation"] = true;
-        }
-    }
-
-    isolated remote function onTicketMerge(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["TicketService.onTicketMerge"] = true;
-        }
-    }
-
-    isolated remote function onTicketRestore(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["TicketService.onTicketRestore"] = true;
-        }
-    }
-
-    isolated remote function onTicketAssociationChange(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["TicketService.onTicketAssociationChange"] = true;
+            triggerFired["CompanyService.onCompanyRestore"] = true;
         }
     }
 }
@@ -186,27 +78,21 @@ service ContactService on triggerTestListener {
         }
     }
 
-    isolated remote function onContactAssociationChange(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["ContactService.onContactAssociationChange"] = true;
-        }
-    }
-
     isolated remote function onContactDeletion(WebhookEvent payload) returns error? {
         lock {
             triggerFired["ContactService.onContactDeletion"] = true;
         }
     }
 
-    isolated remote function onContactPrivacyDeletion(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["ContactService.onContactPrivacyDeletion"] = true;
-        }
-    }
-
     isolated remote function onContactPropertyChange(WebhookEvent payload) returns error? {
         lock {
             triggerFired["ContactService.onContactPropertyChange"] = true;
+        }
+    }
+
+    isolated remote function onContactAssociationChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ContactService.onContactAssociationChange"] = true;
         }
     }
 
@@ -221,42 +107,10 @@ service ContactService on triggerTestListener {
             triggerFired["ContactService.onContactRestore"] = true;
         }
     }
-}
 
-service CompanyService on triggerTestListener {
-    isolated remote function onCompanyDeletion(WebhookEvent payload) returns error? {
+    isolated remote function onContactPrivacyDeletion(WebhookEvent payload) returns error? {
         lock {
-            triggerFired["CompanyService.onCompanyDeletion"] = true;
-        }
-    }
-
-    isolated remote function onCompanyRestore(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["CompanyService.onCompanyRestore"] = true;
-        }
-    }
-
-    isolated remote function onCompanyMerge(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["CompanyService.onCompanyMerge"] = true;
-        }
-    }
-
-    isolated remote function onCompanyPropertyChange(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["CompanyService.onCompanyPropertyChange"] = true;
-        }
-    }
-
-    isolated remote function onCompanyCreation(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["CompanyService.onCompanyCreation"] = true;
-        }
-    }
-
-    isolated remote function onCompanyAssociationChange(WebhookEvent payload) returns error? {
-        lock {
-            triggerFired["CompanyService.onCompanyAssociationChange"] = true;
+            triggerFired["ContactService.onContactPrivacyDeletion"] = true;
         }
     }
 }
@@ -265,6 +119,12 @@ service ConversationService on triggerTestListener {
     isolated remote function onConversationCreation(WebhookEvent payload) returns error? {
         lock {
             triggerFired["ConversationService.onConversationCreation"] = true;
+        }
+    }
+
+    isolated remote function onConversationDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ConversationService.onConversationDeletion"] = true;
         }
     }
 
@@ -285,10 +145,150 @@ service ConversationService on triggerTestListener {
             triggerFired["ConversationService.onConversationNewMessage"] = true;
         }
     }
+}
 
-    isolated remote function onConversationDeletion(WebhookEvent payload) returns error? {
+service DealService on triggerTestListener {
+    isolated remote function onDealCreation(WebhookEvent payload) returns error? {
         lock {
-            triggerFired["ConversationService.onConversationDeletion"] = true;
+            triggerFired["DealService.onDealCreation"] = true;
+        }
+    }
+
+    isolated remote function onDealDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["DealService.onDealDeletion"] = true;
+        }
+    }
+
+    isolated remote function onDealPropertyChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["DealService.onDealPropertyChange"] = true;
+        }
+    }
+
+    isolated remote function onDealAssociationChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["DealService.onDealAssociationChange"] = true;
+        }
+    }
+
+    isolated remote function onDealMerge(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["DealService.onDealMerge"] = true;
+        }
+    }
+
+    isolated remote function onDealRestore(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["DealService.onDealRestore"] = true;
+        }
+    }
+}
+
+service TicketService on triggerTestListener {
+    isolated remote function onTicketCreation(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketCreation"] = true;
+        }
+    }
+
+    isolated remote function onTicketDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketDeletion"] = true;
+        }
+    }
+
+    isolated remote function onTicketPropertyChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketPropertyChange"] = true;
+        }
+    }
+
+    isolated remote function onTicketAssociationChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketAssociationChange"] = true;
+        }
+    }
+
+    isolated remote function onTicketMerge(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketMerge"] = true;
+        }
+    }
+
+    isolated remote function onTicketRestore(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["TicketService.onTicketRestore"] = true;
+        }
+    }
+}
+
+service ProductService on triggerTestListener {
+    isolated remote function onProductCreation(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ProductService.onProductCreation"] = true;
+        }
+    }
+
+    isolated remote function onProductDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ProductService.onProductDeletion"] = true;
+        }
+    }
+
+    isolated remote function onProductPropertyChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ProductService.onProductPropertyChange"] = true;
+        }
+    }
+
+    isolated remote function onProductMerge(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ProductService.onProductMerge"] = true;
+        }
+    }
+
+    isolated remote function onProductRestore(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["ProductService.onProductRestore"] = true;
+        }
+    }
+}
+
+service LineItemService on triggerTestListener {
+    isolated remote function onLineItemCreation(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemCreation"] = true;
+        }
+    }
+
+    isolated remote function onLineItemDeletion(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemDeletion"] = true;
+        }
+    }
+
+    isolated remote function onLineItemPropertyChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemPropertyChange"] = true;
+        }
+    }
+
+    isolated remote function onLineItemAssociationChange(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemAssociationChange"] = true;
+        }
+    }
+
+    isolated remote function onLineItemMerge(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemMerge"] = true;
+        }
+    }
+
+    isolated remote function onLineItemRestore(WebhookEvent payload) returns error? {
+        lock {
+            triggerFired["LineItemService.onLineItemRestore"] = true;
         }
     }
 }
@@ -320,164 +320,45 @@ function waitForDispatch(string trackerKey) returns boolean {
 }
 
 @test:Config {}
-function testDealDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.deletion");
+function testCompanyCreationDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("company.creation");
     test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("DealService.onDealDeletion"), "DealService.onDealDeletion should have fired");
+    test:assertTrue(waitForDispatch("CompanyService.onCompanyCreation"), "CompanyService.onCompanyCreation should have fired");
 }
 
 @test:Config {}
-function testDealCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.creation");
+function testCompanyDeletionDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("company.deletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("DealService.onDealCreation"), "DealService.onDealCreation should have fired");
+    test:assertTrue(waitForDispatch("CompanyService.onCompanyDeletion"), "CompanyService.onCompanyDeletion should have fired");
 }
 
 @test:Config {}
-function testDealMergeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.merge");
+function testCompanyPropertyChangeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("company.propertyChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("DealService.onDealMerge"), "DealService.onDealMerge should have fired");
+    test:assertTrue(waitForDispatch("CompanyService.onCompanyPropertyChange"), "CompanyService.onCompanyPropertyChange should have fired");
 }
 
 @test:Config {}
-function testDealPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.propertyChange");
+function testCompanyAssociationChangeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("company.associationChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("DealService.onDealPropertyChange"), "DealService.onDealPropertyChange should have fired");
+    test:assertTrue(waitForDispatch("CompanyService.onCompanyAssociationChange"), "CompanyService.onCompanyAssociationChange should have fired");
 }
 
 @test:Config {}
-function testDealRestoreDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.restore");
+function testCompanyMergeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("company.merge");
     test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("DealService.onDealRestore"), "DealService.onDealRestore should have fired");
+    test:assertTrue(waitForDispatch("CompanyService.onCompanyMerge"), "CompanyService.onCompanyMerge should have fired");
 }
 
 @test:Config {}
-function testDealAssociationChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("deal.associationChange");
+function testCompanyRestoreDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("company.restore");
     test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("DealService.onDealAssociationChange"), "DealService.onDealAssociationChange should have fired");
-}
-
-@test:Config {}
-function testProductPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("product.propertyChange");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("ProductService.onProductPropertyChange"), "ProductService.onProductPropertyChange should have fired");
-}
-
-@test:Config {}
-function testProductDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("product.deletion");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("ProductService.onProductDeletion"), "ProductService.onProductDeletion should have fired");
-}
-
-@test:Config {}
-function testProductMergeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("product.merge");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("ProductService.onProductMerge"), "ProductService.onProductMerge should have fired");
-}
-
-@test:Config {}
-function testProductRestoreDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("product.restore");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("ProductService.onProductRestore"), "ProductService.onProductRestore should have fired");
-}
-
-@test:Config {}
-function testProductCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("product.creation");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("ProductService.onProductCreation"), "ProductService.onProductCreation should have fired");
-}
-
-@test:Config {}
-function testLineItemMergeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.merge");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("LineItemService.onLineItemMerge"), "LineItemService.onLineItemMerge should have fired");
-}
-
-@test:Config {}
-function testLineItemDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.deletion");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("LineItemService.onLineItemDeletion"), "LineItemService.onLineItemDeletion should have fired");
-}
-
-@test:Config {}
-function testLineItemPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.propertyChange");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("LineItemService.onLineItemPropertyChange"), "LineItemService.onLineItemPropertyChange should have fired");
-}
-
-@test:Config {}
-function testLineItemRestoreDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.restore");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("LineItemService.onLineItemRestore"), "LineItemService.onLineItemRestore should have fired");
-}
-
-@test:Config {}
-function testLineItemAssociationChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.associationChange");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("LineItemService.onLineItemAssociationChange"), "LineItemService.onLineItemAssociationChange should have fired");
-}
-
-@test:Config {}
-function testLineItemCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("line_item.creation");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("LineItemService.onLineItemCreation"), "LineItemService.onLineItemCreation should have fired");
-}
-
-@test:Config {}
-function testTicketPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.propertyChange");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("TicketService.onTicketPropertyChange"), "TicketService.onTicketPropertyChange should have fired");
-}
-
-@test:Config {}
-function testTicketDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.deletion");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("TicketService.onTicketDeletion"), "TicketService.onTicketDeletion should have fired");
-}
-
-@test:Config {}
-function testTicketCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.creation");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("TicketService.onTicketCreation"), "TicketService.onTicketCreation should have fired");
-}
-
-@test:Config {}
-function testTicketMergeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.merge");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("TicketService.onTicketMerge"), "TicketService.onTicketMerge should have fired");
-}
-
-@test:Config {}
-function testTicketRestoreDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.restore");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("TicketService.onTicketRestore"), "TicketService.onTicketRestore should have fired");
-}
-
-@test:Config {}
-function testTicketAssociationChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("ticket.associationChange");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("TicketService.onTicketAssociationChange"), "TicketService.onTicketAssociationChange should have fired");
+    test:assertTrue(waitForDispatch("CompanyService.onCompanyRestore"), "CompanyService.onCompanyRestore should have fired");
 }
 
 @test:Config {}
@@ -488,13 +369,6 @@ function testContactCreationDispatch() returns error? {
 }
 
 @test:Config {}
-function testContactAssociationChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("contact.associationChange");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("ContactService.onContactAssociationChange"), "ContactService.onContactAssociationChange should have fired");
-}
-
-@test:Config {}
 function testContactDeletionDispatch() returns error? {
     http:Response response = check sendSignedTriggerWebhook("contact.deletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
@@ -502,17 +376,17 @@ function testContactDeletionDispatch() returns error? {
 }
 
 @test:Config {}
-function testContactPrivacyDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("contact.privacyDeletion");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("ContactService.onContactPrivacyDeletion"), "ContactService.onContactPrivacyDeletion should have fired");
-}
-
-@test:Config {}
 function testContactPropertyChangeDispatch() returns error? {
     http:Response response = check sendSignedTriggerWebhook("contact.propertyChange");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ContactService.onContactPropertyChange"), "ContactService.onContactPropertyChange should have fired");
+}
+
+@test:Config {}
+function testContactAssociationChangeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("contact.associationChange");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("ContactService.onContactAssociationChange"), "ContactService.onContactAssociationChange should have fired");
 }
 
 @test:Config {}
@@ -530,45 +404,10 @@ function testContactRestoreDispatch() returns error? {
 }
 
 @test:Config {}
-function testCompanyDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.deletion");
+function testContactPrivacyDeletionDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("contact.privacyDeletion");
     test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("CompanyService.onCompanyDeletion"), "CompanyService.onCompanyDeletion should have fired");
-}
-
-@test:Config {}
-function testCompanyRestoreDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.restore");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("CompanyService.onCompanyRestore"), "CompanyService.onCompanyRestore should have fired");
-}
-
-@test:Config {}
-function testCompanyMergeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.merge");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("CompanyService.onCompanyMerge"), "CompanyService.onCompanyMerge should have fired");
-}
-
-@test:Config {}
-function testCompanyPropertyChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.propertyChange");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("CompanyService.onCompanyPropertyChange"), "CompanyService.onCompanyPropertyChange should have fired");
-}
-
-@test:Config {}
-function testCompanyCreationDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.creation");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("CompanyService.onCompanyCreation"), "CompanyService.onCompanyCreation should have fired");
-}
-
-@test:Config {}
-function testCompanyAssociationChangeDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("company.associationChange");
-    test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("CompanyService.onCompanyAssociationChange"), "CompanyService.onCompanyAssociationChange should have fired");
+    test:assertTrue(waitForDispatch("ContactService.onContactPrivacyDeletion"), "ContactService.onContactPrivacyDeletion should have fired");
 }
 
 @test:Config {}
@@ -576,6 +415,13 @@ function testConversationCreationDispatch() returns error? {
     http:Response response = check sendSignedTriggerWebhook("conversation.creation");
     test:assertEquals(response.statusCode, http:STATUS_OK);
     test:assertTrue(waitForDispatch("ConversationService.onConversationCreation"), "ConversationService.onConversationCreation should have fired");
+}
+
+@test:Config {}
+function testConversationDeletionDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("conversation.deletion");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("ConversationService.onConversationDeletion"), "ConversationService.onConversationDeletion should have fired");
 }
 
 @test:Config {}
@@ -600,9 +446,163 @@ function testConversationNewMessageDispatch() returns error? {
 }
 
 @test:Config {}
-function testConversationDeletionDispatch() returns error? {
-    http:Response response = check sendSignedTriggerWebhook("conversation.deletion");
+function testDealCreationDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("deal.creation");
     test:assertEquals(response.statusCode, http:STATUS_OK);
-    test:assertTrue(waitForDispatch("ConversationService.onConversationDeletion"), "ConversationService.onConversationDeletion should have fired");
+    test:assertTrue(waitForDispatch("DealService.onDealCreation"), "DealService.onDealCreation should have fired");
+}
+
+@test:Config {}
+function testDealDeletionDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("deal.deletion");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("DealService.onDealDeletion"), "DealService.onDealDeletion should have fired");
+}
+
+@test:Config {}
+function testDealPropertyChangeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("deal.propertyChange");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("DealService.onDealPropertyChange"), "DealService.onDealPropertyChange should have fired");
+}
+
+@test:Config {}
+function testDealAssociationChangeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("deal.associationChange");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("DealService.onDealAssociationChange"), "DealService.onDealAssociationChange should have fired");
+}
+
+@test:Config {}
+function testDealMergeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("deal.merge");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("DealService.onDealMerge"), "DealService.onDealMerge should have fired");
+}
+
+@test:Config {}
+function testDealRestoreDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("deal.restore");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("DealService.onDealRestore"), "DealService.onDealRestore should have fired");
+}
+
+@test:Config {}
+function testTicketCreationDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("ticket.creation");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("TicketService.onTicketCreation"), "TicketService.onTicketCreation should have fired");
+}
+
+@test:Config {}
+function testTicketDeletionDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("ticket.deletion");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("TicketService.onTicketDeletion"), "TicketService.onTicketDeletion should have fired");
+}
+
+@test:Config {}
+function testTicketPropertyChangeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("ticket.propertyChange");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("TicketService.onTicketPropertyChange"), "TicketService.onTicketPropertyChange should have fired");
+}
+
+@test:Config {}
+function testTicketAssociationChangeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("ticket.associationChange");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("TicketService.onTicketAssociationChange"), "TicketService.onTicketAssociationChange should have fired");
+}
+
+@test:Config {}
+function testTicketMergeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("ticket.merge");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("TicketService.onTicketMerge"), "TicketService.onTicketMerge should have fired");
+}
+
+@test:Config {}
+function testTicketRestoreDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("ticket.restore");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("TicketService.onTicketRestore"), "TicketService.onTicketRestore should have fired");
+}
+
+@test:Config {}
+function testProductCreationDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("product.creation");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("ProductService.onProductCreation"), "ProductService.onProductCreation should have fired");
+}
+
+@test:Config {}
+function testProductDeletionDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("product.deletion");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("ProductService.onProductDeletion"), "ProductService.onProductDeletion should have fired");
+}
+
+@test:Config {}
+function testProductPropertyChangeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("product.propertyChange");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("ProductService.onProductPropertyChange"), "ProductService.onProductPropertyChange should have fired");
+}
+
+@test:Config {}
+function testProductMergeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("product.merge");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("ProductService.onProductMerge"), "ProductService.onProductMerge should have fired");
+}
+
+@test:Config {}
+function testProductRestoreDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("product.restore");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("ProductService.onProductRestore"), "ProductService.onProductRestore should have fired");
+}
+
+@test:Config {}
+function testLineItemCreationDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("line_item.creation");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("LineItemService.onLineItemCreation"), "LineItemService.onLineItemCreation should have fired");
+}
+
+@test:Config {}
+function testLineItemDeletionDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("line_item.deletion");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("LineItemService.onLineItemDeletion"), "LineItemService.onLineItemDeletion should have fired");
+}
+
+@test:Config {}
+function testLineItemPropertyChangeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("line_item.propertyChange");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("LineItemService.onLineItemPropertyChange"), "LineItemService.onLineItemPropertyChange should have fired");
+}
+
+@test:Config {}
+function testLineItemAssociationChangeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("line_item.associationChange");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("LineItemService.onLineItemAssociationChange"), "LineItemService.onLineItemAssociationChange should have fired");
+}
+
+@test:Config {}
+function testLineItemMergeDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("line_item.merge");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("LineItemService.onLineItemMerge"), "LineItemService.onLineItemMerge should have fired");
+}
+
+@test:Config {}
+function testLineItemRestoreDispatch() returns error? {
+    http:Response response = check sendSignedTriggerWebhook("line_item.restore");
+    test:assertEquals(response.statusCode, http:STATUS_OK);
+    test:assertTrue(waitForDispatch("LineItemService.onLineItemRestore"), "LineItemService.onLineItemRestore should have fired");
 }
 

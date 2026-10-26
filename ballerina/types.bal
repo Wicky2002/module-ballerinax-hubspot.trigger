@@ -80,6 +80,3 @@ public type WebhookEvent record {|
     string messageType?;
     json...;
 |};
-
-# The union of every possible webhook payload type this listener can receive.
-public type GenericDataType WebhookEvent;

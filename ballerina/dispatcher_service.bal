@@ -27,7 +27,7 @@ service class DispatcherService {
     private string? webhookSecret;
     private string callbackUrl;
 
-    function init(string? webhookSecret, string callbackUrl) {
+    isolated function init(string? webhookSecret, string callbackUrl) {
         self.webhookSecret = webhookSecret;
         self.callbackUrl = callbackUrl;
     }
@@ -114,16 +114,10 @@ service class DispatcherService {
     }
 
     private isolated function matchRemoteFunc(json payload, string eventType) returns boolean|error {
-        if check self.matchRemoteFuncForTicket(payload) {
-            return true;
-        }
         if check self.matchRemoteFuncForCompany(payload) {
             return true;
         }
-        if check self.matchRemoteFuncForLineItem(payload) {
-            return true;
-        }
-        if check self.matchRemoteFuncForProduct(payload) {
+        if check self.matchRemoteFuncForContact(payload) {
             return true;
         }
         if check self.matchRemoteFuncForConversation(payload) {
@@ -132,122 +126,76 @@ service class DispatcherService {
         if check self.matchRemoteFuncForDeal(payload) {
             return true;
         }
-        if check self.matchRemoteFuncForContact(payload) {
+        if check self.matchRemoteFuncForTicket(payload) {
             return true;
         }
-        return false;
-    }
-
-    private isolated function matchRemoteFuncForTicket(json payload) returns boolean|error {
-        match payload.subscriptionType {
-            "ticket.propertyChange" => {
-                check self.executeRemoteFunc(payload, "ticket.propertyChange", "TicketService", "onTicketPropertyChange");
-                return true;
-            }
-            "ticket.deletion" => {
-                check self.executeRemoteFunc(payload, "ticket.deletion", "TicketService", "onTicketDeletion");
-                return true;
-            }
-            "ticket.creation" => {
-                check self.executeRemoteFunc(payload, "ticket.creation", "TicketService", "onTicketCreation");
-                return true;
-            }
-            "ticket.merge" => {
-                check self.executeRemoteFunc(payload, "ticket.merge", "TicketService", "onTicketMerge");
-                return true;
-            }
-            "ticket.restore" => {
-                check self.executeRemoteFunc(payload, "ticket.restore", "TicketService", "onTicketRestore");
-                return true;
-            }
-            "ticket.associationChange" => {
-                check self.executeRemoteFunc(payload, "ticket.associationChange", "TicketService", "onTicketAssociationChange");
-                return true;
-            }
+        if check self.matchRemoteFuncForProduct(payload) {
+            return true;
+        }
+        if check self.matchRemoteFuncForLineItem(payload) {
+            return true;
         }
         return false;
     }
 
     private isolated function matchRemoteFuncForCompany(json payload) returns boolean|error {
         match payload.subscriptionType {
+            "company.creation" => {
+                check self.executeRemoteFunc(payload, "company.creation", "CompanyService", "onCompanyCreation");
+                return true;
+            }
             "company.deletion" => {
                 check self.executeRemoteFunc(payload, "company.deletion", "CompanyService", "onCompanyDeletion");
-                return true;
-            }
-            "company.restore" => {
-                check self.executeRemoteFunc(payload, "company.restore", "CompanyService", "onCompanyRestore");
-                return true;
-            }
-            "company.merge" => {
-                check self.executeRemoteFunc(payload, "company.merge", "CompanyService", "onCompanyMerge");
                 return true;
             }
             "company.propertyChange" => {
                 check self.executeRemoteFunc(payload, "company.propertyChange", "CompanyService", "onCompanyPropertyChange");
                 return true;
             }
-            "company.creation" => {
-                check self.executeRemoteFunc(payload, "company.creation", "CompanyService", "onCompanyCreation");
-                return true;
-            }
             "company.associationChange" => {
                 check self.executeRemoteFunc(payload, "company.associationChange", "CompanyService", "onCompanyAssociationChange");
                 return true;
             }
-        }
-        return false;
-    }
-
-    private isolated function matchRemoteFuncForLineItem(json payload) returns boolean|error {
-        match payload.subscriptionType {
-            "line_item.merge" => {
-                check self.executeRemoteFunc(payload, "line_item.merge", "LineItemService", "onLineItemMerge");
+            "company.merge" => {
+                check self.executeRemoteFunc(payload, "company.merge", "CompanyService", "onCompanyMerge");
                 return true;
             }
-            "line_item.deletion" => {
-                check self.executeRemoteFunc(payload, "line_item.deletion", "LineItemService", "onLineItemDeletion");
-                return true;
-            }
-            "line_item.propertyChange" => {
-                check self.executeRemoteFunc(payload, "line_item.propertyChange", "LineItemService", "onLineItemPropertyChange");
-                return true;
-            }
-            "line_item.restore" => {
-                check self.executeRemoteFunc(payload, "line_item.restore", "LineItemService", "onLineItemRestore");
-                return true;
-            }
-            "line_item.associationChange" => {
-                check self.executeRemoteFunc(payload, "line_item.associationChange", "LineItemService", "onLineItemAssociationChange");
-                return true;
-            }
-            "line_item.creation" => {
-                check self.executeRemoteFunc(payload, "line_item.creation", "LineItemService", "onLineItemCreation");
+            "company.restore" => {
+                check self.executeRemoteFunc(payload, "company.restore", "CompanyService", "onCompanyRestore");
                 return true;
             }
         }
         return false;
     }
 
-    private isolated function matchRemoteFuncForProduct(json payload) returns boolean|error {
+    private isolated function matchRemoteFuncForContact(json payload) returns boolean|error {
         match payload.subscriptionType {
-            "product.propertyChange" => {
-                check self.executeRemoteFunc(payload, "product.propertyChange", "ProductService", "onProductPropertyChange");
+            "contact.creation" => {
+                check self.executeRemoteFunc(payload, "contact.creation", "ContactService", "onContactCreation");
                 return true;
             }
-            "product.deletion" => {
-                check self.executeRemoteFunc(payload, "product.deletion", "ProductService", "onProductDeletion");
+            "contact.deletion" => {
+                check self.executeRemoteFunc(payload, "contact.deletion", "ContactService", "onContactDeletion");
                 return true;
             }
-            "product.merge" => {
-                check self.executeRemoteFunc(payload, "product.merge", "ProductService", "onProductMerge");
+            "contact.propertyChange" => {
+                check self.executeRemoteFunc(payload, "contact.propertyChange", "ContactService", "onContactPropertyChange");
                 return true;
             }
-            "product.restore" => {
-                check self.executeRemoteFunc(payload, "product.restore", "ProductService", "onProductRestore");
+            "contact.associationChange" => {
+                check self.executeRemoteFunc(payload, "contact.associationChange", "ContactService", "onContactAssociationChange");
                 return true;
             }
-            "product.creation" => {
-                check self.executeRemoteFunc(payload, "product.creation", "ProductService", "onProductCreation");
+            "contact.merge" => {
+                check self.executeRemoteFunc(payload, "contact.merge", "ContactService", "onContactMerge");
+                return true;
+            }
+            "contact.restore" => {
+                check self.executeRemoteFunc(payload, "contact.restore", "ContactService", "onContactRestore");
+                return true;
+            }
+            "contact.privacyDeletion" => {
+                check self.executeRemoteFunc(payload, "contact.privacyDeletion", "ContactService", "onContactPrivacyDeletion");
                 return true;
             }
         }
@@ -258,6 +206,10 @@ service class DispatcherService {
         match payload.subscriptionType {
             "conversation.creation" => {
                 check self.executeRemoteFunc(payload, "conversation.creation", "ConversationService", "onConversationCreation");
+                return true;
+            }
+            "conversation.deletion" => {
+                check self.executeRemoteFunc(payload, "conversation.deletion", "ConversationService", "onConversationDeletion");
                 return true;
             }
             "conversation.propertyChange" => {
@@ -272,72 +224,120 @@ service class DispatcherService {
                 check self.executeRemoteFunc(payload, "conversation.newMessage", "ConversationService", "onConversationNewMessage");
                 return true;
             }
-            "conversation.deletion" => {
-                check self.executeRemoteFunc(payload, "conversation.deletion", "ConversationService", "onConversationDeletion");
-                return true;
-            }
         }
         return false;
     }
 
     private isolated function matchRemoteFuncForDeal(json payload) returns boolean|error {
         match payload.subscriptionType {
-            "deal.deletion" => {
-                check self.executeRemoteFunc(payload, "deal.deletion", "DealService", "onDealDeletion");
-                return true;
-            }
             "deal.creation" => {
                 check self.executeRemoteFunc(payload, "deal.creation", "DealService", "onDealCreation");
                 return true;
             }
-            "deal.merge" => {
-                check self.executeRemoteFunc(payload, "deal.merge", "DealService", "onDealMerge");
+            "deal.deletion" => {
+                check self.executeRemoteFunc(payload, "deal.deletion", "DealService", "onDealDeletion");
                 return true;
             }
             "deal.propertyChange" => {
                 check self.executeRemoteFunc(payload, "deal.propertyChange", "DealService", "onDealPropertyChange");
                 return true;
             }
-            "deal.restore" => {
-                check self.executeRemoteFunc(payload, "deal.restore", "DealService", "onDealRestore");
-                return true;
-            }
             "deal.associationChange" => {
                 check self.executeRemoteFunc(payload, "deal.associationChange", "DealService", "onDealAssociationChange");
+                return true;
+            }
+            "deal.merge" => {
+                check self.executeRemoteFunc(payload, "deal.merge", "DealService", "onDealMerge");
+                return true;
+            }
+            "deal.restore" => {
+                check self.executeRemoteFunc(payload, "deal.restore", "DealService", "onDealRestore");
                 return true;
             }
         }
         return false;
     }
 
-    private isolated function matchRemoteFuncForContact(json payload) returns boolean|error {
+    private isolated function matchRemoteFuncForTicket(json payload) returns boolean|error {
         match payload.subscriptionType {
-            "contact.creation" => {
-                check self.executeRemoteFunc(payload, "contact.creation", "ContactService", "onContactCreation");
+            "ticket.creation" => {
+                check self.executeRemoteFunc(payload, "ticket.creation", "TicketService", "onTicketCreation");
                 return true;
             }
-            "contact.associationChange" => {
-                check self.executeRemoteFunc(payload, "contact.associationChange", "ContactService", "onContactAssociationChange");
+            "ticket.deletion" => {
+                check self.executeRemoteFunc(payload, "ticket.deletion", "TicketService", "onTicketDeletion");
                 return true;
             }
-            "contact.deletion" => {
-                check self.executeRemoteFunc(payload, "contact.deletion", "ContactService", "onContactDeletion");
+            "ticket.propertyChange" => {
+                check self.executeRemoteFunc(payload, "ticket.propertyChange", "TicketService", "onTicketPropertyChange");
                 return true;
             }
-            "contact.privacyDeletion" => {
-                check self.executeRemoteFunc(payload, "contact.privacyDeletion", "ContactService", "onContactPrivacyDeletion");
+            "ticket.associationChange" => {
+                check self.executeRemoteFunc(payload, "ticket.associationChange", "TicketService", "onTicketAssociationChange");
                 return true;
             }
-            "contact.propertyChange" => {
-                check self.executeRemoteFunc(payload, "contact.propertyChange", "ContactService", "onContactPropertyChange");
+            "ticket.merge" => {
+                check self.executeRemoteFunc(payload, "ticket.merge", "TicketService", "onTicketMerge");
                 return true;
             }
-            "contact.merge" => {
-                check self.executeRemoteFunc(payload, "contact.merge", "ContactService", "onContactMerge");
+            "ticket.restore" => {
+                check self.executeRemoteFunc(payload, "ticket.restore", "TicketService", "onTicketRestore");
                 return true;
             }
-            "contact.restore" => {
-                check self.executeRemoteFunc(payload, "contact.restore", "ContactService", "onContactRestore");
+        }
+        return false;
+    }
+
+    private isolated function matchRemoteFuncForProduct(json payload) returns boolean|error {
+        match payload.subscriptionType {
+            "product.creation" => {
+                check self.executeRemoteFunc(payload, "product.creation", "ProductService", "onProductCreation");
+                return true;
+            }
+            "product.deletion" => {
+                check self.executeRemoteFunc(payload, "product.deletion", "ProductService", "onProductDeletion");
+                return true;
+            }
+            "product.propertyChange" => {
+                check self.executeRemoteFunc(payload, "product.propertyChange", "ProductService", "onProductPropertyChange");
+                return true;
+            }
+            "product.merge" => {
+                check self.executeRemoteFunc(payload, "product.merge", "ProductService", "onProductMerge");
+                return true;
+            }
+            "product.restore" => {
+                check self.executeRemoteFunc(payload, "product.restore", "ProductService", "onProductRestore");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private isolated function matchRemoteFuncForLineItem(json payload) returns boolean|error {
+        match payload.subscriptionType {
+            "line_item.creation" => {
+                check self.executeRemoteFunc(payload, "line_item.creation", "LineItemService", "onLineItemCreation");
+                return true;
+            }
+            "line_item.deletion" => {
+                check self.executeRemoteFunc(payload, "line_item.deletion", "LineItemService", "onLineItemDeletion");
+                return true;
+            }
+            "line_item.propertyChange" => {
+                check self.executeRemoteFunc(payload, "line_item.propertyChange", "LineItemService", "onLineItemPropertyChange");
+                return true;
+            }
+            "line_item.associationChange" => {
+                check self.executeRemoteFunc(payload, "line_item.associationChange", "LineItemService", "onLineItemAssociationChange");
+                return true;
+            }
+            "line_item.merge" => {
+                check self.executeRemoteFunc(payload, "line_item.merge", "LineItemService", "onLineItemMerge");
+                return true;
+            }
+            "line_item.restore" => {
+                check self.executeRemoteFunc(payload, "line_item.restore", "LineItemService", "onLineItemRestore");
                 return true;
             }
         }
