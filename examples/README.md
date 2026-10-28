@@ -13,7 +13,7 @@ example needs a HubSpot app with a webhook subscribed to the events it listens f
 
 ## Running an example
 
-Execute the following commands to build an example from the source:
+Execute the following commands from an example's directory (for example `cd company-event-logger`) to build it from the source:
 
 * To build an example:
 
