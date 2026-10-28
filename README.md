@@ -19,6 +19,15 @@ The [Ballerina](https://ballerina.io/) listener for Hubspot allows you to listen
 This module receives HubSpot's webhook events directly, batched into a single delivery when
 multiple events occur close together - it does not call HubSpot's own REST API on your behalf.
 
+### Key features
+
+- Receives 41 HubSpot CRM events across 7 object types: companies, contacts, conversations, deals, tickets, products and line items
+- Verifies every delivery with the app's client secret (`X-HubSpot-Signature-v3`) and rejects requests older than five minutes
+- Handles HubSpot's batched deliveries, dispatching each event in a batch to its own handler
+- Acknowledges each delivery before running your handler, so a slow or failing handler doesn't cause retries
+- Services can be attached on their own path, so several triggers and HTTP services can share one port
+- Trigger services are listed by `bal build --export-endpoints` (Ballerina 2201.13.6 or later)
+
 ## Setup guide
 
 Before using this connector in your Ballerina application, you need a HubSpot developer account
@@ -307,7 +316,7 @@ but not for a real deployment. For production use:
 
 |                               | Version                       |
 |-------------------------------|-------------------------------|
-| Ballerina Language            | Ballerina Swan Lake 2201.13.4 |
+| Ballerina Language            | Ballerina Swan Lake 2201.13.0 |
 
 ## Quickstart
 
