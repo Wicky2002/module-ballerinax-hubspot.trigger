@@ -311,6 +311,9 @@ but not for a real deployment. For production use:
    `callbackUrl` must exactly match the `targetUrl` you set in step 2 above - it's part of the
    signed payload HubSpot uses to compute the signature, so any mismatch makes verification fail
    for every request.
+   HubSpot signs the URL exactly as it is entered, so keep the trailing slash (or its absence) the
+   same in both. One HubSpot app delivers every event to its one target URL, so attach the services
+   for an app on one path; a second app has its own Client Secret and needs its own listener.
 
 ### Compatibility
 
