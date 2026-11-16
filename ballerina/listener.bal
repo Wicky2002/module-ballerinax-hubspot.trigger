@@ -14,32 +14,69 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/cloud;
 import ballerina/http;
 
 @display {label: "HubSpot Subscription API", iconPath: "icon.png"}
 public class Listener {
     private http:Listener httpListener;
-    private DispatcherService dispatcherService;
+    private ListenerConfig listenerConfig;
+    private map<DispatcherService> dispatchers = {};
+    private [string, GenericServiceType][] attachments = [];
 
-    public function init(ListenerConfig listenerConfig = {}, @cloud:Expose int|http:Listener listenOn = 8090) returns error? {
+    public function init(ListenerConfig listenerConfig = {}, int|http:Listener listenOn = 8090) returns error? {
         if listenOn is http:Listener {
             self.httpListener = listenOn;
         } else {
-            self.httpListener = check new (listenOn);
+            self.httpListener = check new (listenOn, requestLimits = {maxEntityBodySize: 26214400});
         }
-        self.dispatcherService = new DispatcherService(listenerConfig.webhookSecret, listenerConfig.callbackUrl);
-        check self.httpListener.attach(self.dispatcherService, ());
+        self.listenerConfig = listenerConfig;
     }
 
-    public isolated function attach(GenericServiceType serviceRef, () attachPoint) returns error? {
+    public isolated function attach(GenericServiceType serviceRef, string[]|string? attachPoint) returns error? {
         string serviceTypeStr = check self.getServiceTypeStr(serviceRef);
-        check self.dispatcherService.addServiceRef(serviceTypeStr, serviceRef);
+        string path = self.pathKey(attachPoint);
+        DispatcherService dispatcher;
+        DispatcherService? existing = self.dispatchers[path];
+        if existing is DispatcherService {
+            dispatcher = existing;
+            check dispatcher.addServiceRef(serviceTypeStr, serviceRef);
+        } else {
+            dispatcher = new (self.listenerConfig.webhookSecret, self.listenerConfig.callbackUrl);
+            check dispatcher.addServiceRef(serviceTypeStr, serviceRef);
+            check self.httpListener.attach(dispatcher, path == "" ? () : path);
+            self.dispatchers[path] = dispatcher;
+        }
+        self.attachments.push([path, serviceRef]);
     }
 
     public isolated function detach(GenericServiceType serviceRef) returns error? {
         string serviceTypeStr = check self.getServiceTypeStr(serviceRef);
-        check self.dispatcherService.removeServiceRef(serviceTypeStr);
+        boolean detached = false;
+        int i = 0;
+        while i < self.attachments.length() {
+            if self.attachments[i][1] !== serviceRef {
+                i += 1;
+                continue;
+            }
+            string path = self.attachments[i][0];
+            DispatcherService dispatcher = self.dispatchers.get(path);
+            boolean pathInUse = false;
+            foreach int j in 0 ..< self.attachments.length() {
+                if j != i && self.attachments[j][0] == path {
+                    pathInUse = true;
+                }
+            }
+            if !pathInUse {
+                check self.httpListener.detach(dispatcher);
+                _ = self.dispatchers.remove(path);
+            }
+            check dispatcher.removeServiceRef(serviceTypeStr);
+            _ = self.attachments.remove(i);
+            detached = true;
+        }
+        if !detached {
+            return error(string `Cannot detach the service of type ${serviceTypeStr}. Service has not been attached to the listener before`);
+        }
     }
 
     public isolated function 'start() returns error? {
@@ -55,31 +92,48 @@ public class Listener {
     }
 
     private isolated function getServiceTypeStr(GenericServiceType serviceRef) returns string|error {
-        match serviceRef {
-            var v if v is TicketService => {
-                return "TicketService";
-            }
-            var v if v is CompanyService => {
-                return "CompanyService";
-            }
-            var v if v is LineItemService => {
-                return "LineItemService";
-            }
-            var v if v is ProductService => {
-                return "ProductService";
-            }
-            var v if v is ConversationService => {
-                return "ConversationService";
-            }
-            var v if v is DealService => {
-                return "DealService";
-            }
-            var v if v is ContactService => {
-                return "ContactService";
-            }
-            var _ => {
-                return error("Unrecognized service type attached to the listener");
-            }
+        string[] matched = [];
+        if serviceRef is CompanyService {
+            matched.push("CompanyService");
         }
+        if serviceRef is ContactService {
+            matched.push("ContactService");
+        }
+        if serviceRef is ConversationService {
+            matched.push("ConversationService");
+        }
+        if serviceRef is DealService {
+            matched.push("DealService");
+        }
+        if serviceRef is TicketService {
+            matched.push("TicketService");
+        }
+        if serviceRef is ProductService {
+            matched.push("ProductService");
+        }
+        if serviceRef is LineItemService {
+            matched.push("LineItemService");
+        }
+        if matched.length() == 1 {
+            return matched[0];
+        }
+        if matched.length() == 0 {
+            return error("Unrecognized service type attached to the listener");
+        }
+        return error(string `The service matches more than one service type (${string:'join(", ", ...matched)}). Implement one service type per service`);
+    }
+
+    private isolated function pathKey(string[]|string? attachPoint) returns string {
+        if attachPoint is () {
+            return "";
+        }
+        string path = attachPoint is string ? attachPoint : string:'join("/", ...attachPoint);
+        while path.startsWith("/") {
+            path = path.substring(1);
+        }
+        while path.endsWith("/") {
+            path = path.substring(0, path.length() - 1);
+        }
+        return path;
     }
 }

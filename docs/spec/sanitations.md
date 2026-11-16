@@ -9,14 +9,14 @@ This document records the sanitation done on top of the AsyncAPI specification f
 
 1. Added an `x-ballerina-auth` block. The spec previously had no webhook signature verification at all — any POST claiming to be from HubSpot was dispatched unchecked. HubSpot's real v3 scheme was confirmed empirically against a captured live webhook delivery: HMAC-SHA256 of `method + callbackUrl + body + timestamp`, base64-encoded, checked against the `X-HubSpot-Signature-v3` header, with a 5-minute freshness window against the `X-HubSpot-Request-Timestamp` header.
 2. Wrapped every message's `payload` as `type: array` with an `items` schema, instead of a bare `$ref`. HubSpot delivers multiple events in a single POST as a JSON array (up to 100 per request) rather than one event per request; the generator detects this batched delivery shape directly from the array-typed payload schema (`ballerina-platform/asyncapi-tools#9058`) and dispatches each array element independently. Without it, the dispatcher would only ever process the first event in each batch.
-3. Documented (as a comment block in `asyncapi.yaml`) that `callbackUrl` must exactly match HubSpot's full external request URI — it's part of the signed payload (`$config('callbackUrl')` above), so any mismatch (trailing slash, scheme, path) makes every signature verification fail.
+3. Documented (as a comment block in `asyncapi.yaml`) that `callbackUrl` must exactly match HubSpot's full external request URI — it's part of the signed payload (`$config('callbackUrl')` above), so any mismatch (trailing slash, scheme, path) makes every signature verification fail. Rechecked live on 2026-10-30 against three target URLs: HubSpot signs the URL exactly as entered (`https://host` is signed without a slash although the request arrives at `/`; a path and a query string are signed as they are), so `callbackUrl` stays the full URL rather than a base URL plus the request path.
 
 ## Ballerina trigger generation
 
 The Ballerina trigger source (`listener.bal`, `dispatcher_service.bal`, `service_types.bal`, `types.bal`) is generated from `asyncapi.yaml` using the `asyncapi-tools` generator (`ballerina-platform/asyncapi-tools`). The command should be executed from the repository root directory.
 
 ```bash
-bal asyncapi http -i docs/spec/asyncapi.yaml -o ballerina/
+bal asyncapi docs/spec/asyncapi.yaml --protocol http --with-tests -o ballerina/ --force
 ```
 
 This overwrites `listener.bal`, `dispatcher_service.bal`, `service_types.bal`, and the data-types file in `ballerina/` with fresh output. Diff the result before committing - anything currently correct only because of a hand patch to these files (rather than to the spec or the generator itself) will be silently reverted by this command.

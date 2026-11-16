@@ -1,7 +1,7 @@
 # Ballerina Hubspot.trigger connector
 
 [![Build](https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger/actions/workflows/ci.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger/actions/workflows/ci.yml)
-[![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-hubspot.trigger.svg)](https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger/commits/master)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-hubspot.trigger.svg)](https://github.com/ballerina-platform/module-ballerinax-hubspot.trigger/commits/main)
 [![GitHub Issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-library/module/hubspot.trigger.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-library/labels/module%2Fhubspot.trigger)
 
 ## Overview
@@ -18,6 +18,15 @@ The [Ballerina](https://ballerina.io/) listener for Hubspot allows you to listen
 
 This module receives HubSpot's webhook events directly, batched into a single delivery when
 multiple events occur close together - it does not call HubSpot's own REST API on your behalf.
+
+### Key features
+
+- Receives 41 HubSpot CRM events across 7 object types: companies, contacts, conversations, deals, tickets, products and line items
+- Verifies every delivery with the app's client secret (`X-HubSpot-Signature-v3`) and rejects requests older than five minutes
+- Handles HubSpot's batched deliveries, dispatching each event in a batch to its own handler
+- Acknowledges each delivery before running your handler, so a slow or failing handler doesn't cause retries
+- Services can be attached on their own path, so several triggers and HTTP services can share one port
+- Trigger services are listed by `bal build --export-endpoints` (Ballerina 2201.13.6 or later)
 
 ## Setup guide
 
@@ -302,12 +311,15 @@ but not for a real deployment. For production use:
    `callbackUrl` must exactly match the `targetUrl` you set in step 2 above - it's part of the
    signed payload HubSpot uses to compute the signature, so any mismatch makes verification fail
    for every request.
+   HubSpot signs the URL exactly as it is entered, so keep the trailing slash (or its absence) the
+   same in both. One HubSpot app delivers every event to its one target URL, so attach the services
+   for an app on one path; a second app has its own Client Secret and needs its own listener.
 
 ### Compatibility
 
 |                               | Version                       |
 |-------------------------------|-------------------------------|
-| Ballerina Language            | Ballerina Swan Lake 2201.13.4 |
+| Ballerina Language            | Ballerina Swan Lake 2201.13.0 |
 
 ## Quickstart
 
